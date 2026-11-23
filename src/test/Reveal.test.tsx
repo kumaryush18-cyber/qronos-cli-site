@@ -1,6 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, it } from "vitest";
+import { MotionSwitch } from "@/components/layout/MotionSwitch";
 import { Reveal } from "@/components/ui/Reveal";
+
+afterEach(() => {
+  delete document.documentElement.dataset.motion;
+  localStorage.clear();
+});
 
 describe("Reveal", () => {
   it("marks the block for the observer and keeps the text readable", () => {
@@ -33,5 +40,22 @@ describe("Reveal", () => {
       </ul>,
     );
     expect(screen.getByRole("listitem")).toHaveTextContent("Item");
+  });
+});
+
+describe("the motion switch", () => {
+  it("starts on when nothing was stored", () => {
+    render(<MotionSwitch />);
+    expect(screen.getByRole("button").textContent).toBe("Motion: on");
+    expect(screen.getByRole("button").getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("stops motion and remembers it", async () => {
+    render(<MotionSwitch />);
+    await userEvent.click(screen.getByRole("button"));
+    expect(document.documentElement.dataset.motion).toBe("off");
+    expect(localStorage.getItem("qronos-motion")).toBe("off");
+    expect(screen.getByRole("button").textContent).toBe("Motion: off");
+    expect(screen.getByRole("button").getAttribute("aria-pressed")).toBe("true");
   });
 });

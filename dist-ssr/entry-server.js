@@ -4314,6 +4314,41 @@ const Docs$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   Docs
 }, Symbol.toStringTag, { value: "Module" }));
+function MotionSwitch() {
+  const [off, setOff] = useState(
+    () => typeof document !== "undefined" && document.documentElement.dataset.motion === "off"
+  );
+  function toggle() {
+    const next = !off;
+    setOff(next);
+    if (next) {
+      document.documentElement.dataset.motion = "off";
+      try {
+        localStorage.setItem("qronos-motion", "off");
+      } catch {
+      }
+    } else {
+      delete document.documentElement.dataset.motion;
+      try {
+        localStorage.removeItem("qronos-motion");
+      } catch {
+      }
+    }
+  }
+  return /* @__PURE__ */ jsxs(
+    "button",
+    {
+      type: "button",
+      onClick: toggle,
+      "aria-pressed": off,
+      className: "font-mono text-[11px] uppercase tracking-[0.16em] text-muted transition-colors duration-[160ms] hover:text-ink",
+      children: [
+        "Motion: ",
+        off ? "off" : "on"
+      ]
+    }
+  );
+}
 const SITE = {
   wordmark: { lead: "Qronos", trailing: "CLI" },
   url: "https://cli.qronos.me",
@@ -4359,7 +4394,10 @@ function Footer() {
         ) }, link.label)) })
       ] }, column.title))
     ] }),
-    /* @__PURE__ */ jsx("p", { className: "mt-12 border-t border-line pt-6 font-mono text-[11px] text-muted", children: FOOTER.legal })
+    /* @__PURE__ */ jsxs("div", { className: "mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6", children: [
+      /* @__PURE__ */ jsx("p", { className: "font-mono text-[11px] text-muted", children: FOOTER.legal }),
+      /* @__PURE__ */ jsx(MotionSwitch, {})
+    ] })
   ] }) });
 }
 function Nav() {

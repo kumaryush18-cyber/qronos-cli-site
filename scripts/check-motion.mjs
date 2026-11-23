@@ -72,6 +72,28 @@ const browser = await chromium.launch();
   });
   if (!moved) problems.push("home: reveal has no transition on opacity and translate");
 
+  // Proof that something visibly moves: sample the drifting glow's transform
+  // twice. A screenshot cannot be used here — Playwright waits for animations to
+  // finish before it captures, and an infinite loop never finishes.
+  await page.evaluate(() => window.scrollTo({ top: 0 }));
+  const sample = () =>
+    page.evaluate(() => getComputedStyle(document.querySelector(".glow-drift")).transform);
+  const before = await sample();
+  await page.waitForTimeout(1400);
+  const after = await sample();
+  if (before === after) problems.push("home: the glow transform did not change in 1.4 s, so nothing visibly moves");
+
+  // And the switch must be able to stop it.
+  await page.evaluate(() => {
+    document.documentElement.dataset.motion = "off";
+  });
+  await page.waitForTimeout(120);
+  const stopped = await page.evaluate(() => getComputedStyle(document.querySelector(".glow-drift")).animationName);
+  if (stopped !== "none") problems.push(`motion switch: glow still animates (${stopped})`);
+  await page.evaluate(() => {
+    delete document.documentElement.dataset.motion;
+  });
+
   await context.close();
 }
 

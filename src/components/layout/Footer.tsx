@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { MotionSwitch } from "@/components/layout/MotionSwitch";
 import { Shell } from "@/components/layout/Shell";
 import { FOOTER } from "@/lib/copy";
 import { SITE } from "@/lib/site";
@@ -53,7 +54,10 @@ export function Footer() {
           ))}
         </div>
 
-        <p className="mt-12 border-t border-line pt-6 font-mono text-[11px] text-muted">{FOOTER.legal}</p>
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+          <p className="font-mono text-[11px] text-muted">{FOOTER.legal}</p>
+          <MotionSwitch />
+        </div>
       </Shell>
     </footer>
   );

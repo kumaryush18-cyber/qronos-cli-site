@@ -20,9 +20,20 @@
       a hidden state must never depend on a script that might fail.
     -->
     <script>
-      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        document.documentElement.classList.add("js-motion");
-      }
+      (function () {
+        var root = document.documentElement;
+        var still = false;
+        try {
+          still = localStorage.getItem("qronos-motion") === "off";
+        } catch (error) {
+          still = false;
+        }
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          still = true;
+        }
+        if (still) root.dataset.motion = "off";
+        if (!still) root.classList.add("js-motion");
+      })();
     </script>
   </head>
   <body>
