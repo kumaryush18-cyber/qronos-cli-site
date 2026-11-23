@@ -83,6 +83,22 @@ const browser = await chromium.launch();
   const after = await sample();
   if (before === after) problems.push("home: the glow transform did not change in 1.4 s, so nothing visibly moves");
 
+  // The turning disc is the loudest motion on the page, so it gets its own check.
+  const disc = await page.evaluate(() => {
+    const element = document.querySelector(".aurora-disc");
+    return element ? getComputedStyle(element).rotate : "missing";
+  });
+  if (disc === "missing") problems.push("home: the aurora disc is not on the page");
+  if (disc === "none") problems.push("home: the aurora disc is not turning");
+
+  // The light that walks the terminal border only exists after a measurement.
+  const star = await page.evaluate(() => {
+    const light = document.querySelector(".star-light");
+    return light ? { path: getComputedStyle(light).offsetPath.slice(0, 8), distance: getComputedStyle(light).offsetDistance } : null;
+  });
+  if (!star) problems.push("home: the travelling border light was never drawn");
+  else if (!star.path.startsWith("path(")) problems.push(`home: the border light has no path (${star.path})`);
+
   // And the switch must be able to stop it.
   await page.evaluate(() => {
     document.documentElement.dataset.motion = "off";

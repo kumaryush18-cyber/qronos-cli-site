@@ -13,6 +13,7 @@ import {
 import { Eyebrow } from "@/components/layout/Eyebrow";
 import { Section, Shell } from "@/components/layout/Shell";
 import { TerminalMock } from "@/components/terminal/TerminalMock";
+import { StarBorder } from "@/components/ui/StarBorder";
 import { WorkflowPanelMock } from "@/components/workflow/WorkflowPanelMock";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
@@ -67,6 +68,10 @@ export function Home() {
               scroll sideways by 46px until it did. */}
           <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="glow-drift -top-[120px] left-[-90px] h-[520px] w-[520px] rounded-full opacity-70" />
+            {/* The turning disc of light, the same idea as the Qronos AI landing
+                page. It sits behind the headline and turns once every 20 s. */}
+            <div className="aurora-disc -top-[180px] left-[-160px]" />
+            <div className="aurora-disc -bottom-[220px] right-[-140px] hidden opacity-20 lg:block" style={{ animationDirection: "reverse" }} />
           </div>
           {/* The hero rises but never fades: an opacity-0 headline moves the
               largest-contentful-paint time to the end of its animation. */}
@@ -100,9 +105,9 @@ export function Home() {
 
           {/* No entrance animation on the terminal box: a translate on a block
               this large is counted as a layout shift, and it has its own typing. */}
-          <div className="relative w-full">
+          <StarBorder className="w-full" duration={9} width={190}>
             <TerminalMock lines={HERO_TERMINAL} className="w-full" animate />
-          </div>
+          </StarBorder>
         </div>
       </Shell>
 

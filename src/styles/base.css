@@ -159,6 +159,19 @@
   }
 }
 
+@keyframes qronos-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+/* The light that walks the border. Design taken from the Qronos AI landing page. */
+@keyframes qronos-star-travel {
+  to {
+    offset-distance: 100%;
+  }
+}
+
 @keyframes qronos-underline {
   from {
     scale: 0 1;
@@ -207,7 +220,9 @@ html[data-motion="off"] .shimmer,
 html[data-motion="off"] .cursor,
 html[data-motion="off"] .glow-drift,
 html[data-motion="off"] .run-dot,
-html[data-motion="off"] .hero-rise {
+html[data-motion="off"] .hero-rise,
+html[data-motion="off"] .aurora-disc,
+html[data-motion="off"] .star-light {
   animation: none;
 }
 
@@ -220,6 +235,48 @@ html[data-motion="off"] .js-motion [data-reveal].is-in {
 
 html[data-motion="off"] .nav-link::after {
   transition: none;
+}
+
+/*
+ * The rotating disc of light behind the hero. A conic gradient, blurred, turning
+ * once every 20 s: the same idea as the aurora blob on the Qronos AI landing page,
+ * in this site's palette.
+ */
+.aurora-disc {
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #ff8a33, #ffbe80, #ffd9a8, #ff9b4a, #ff8a33);
+  filter: blur(54px);
+  /* Screen, not normal: orange over near-black mixes to brown, while screen only
+     ever adds light, so the disc stays a glow instead of a stain. */
+  mix-blend-mode: screen;
+  opacity: 0.32;
+  animation: qronos-spin 20s linear infinite;
+}
+
+/*
+ * The light that walks the border. It sits above the card, not behind it: a blob
+ * under an opaque card is invisible, which is what the first version was.
+ */
+.star-light {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  width: var(--star-width, 170px);
+  aspect-ratio: 1;
+  offset-path: var(--star-path);
+  offset-distance: 0%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 205, 130, 0.85) 0%,
+    rgba(255, 107, 0, 0.35) 38%,
+    transparent 72%
+  );
+  filter: blur(4px);
+  animation: qronos-star-travel calc(var(--star-duration, 7) * 1s) linear infinite;
 }
 
 .js-motion .hero-rise {
@@ -386,7 +443,9 @@ html[data-motion="off"] .nav-link::after {
   .shimmer,
   .glow-drift,
   .run-dot,
-  .hero-rise {
+  .hero-rise,
+  .aurora-disc,
+  .star-light {
     animation: none;
   }
 

@@ -4732,6 +4732,46 @@ function TerminalRow({ line, shownChars }) {
       ] });
   }
 }
+function StarBorder({
+  children,
+  className,
+  duration = 7,
+  width = 170
+}) {
+  const ref = useRef(null);
+  const [path, setPath] = useState("");
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const measure = () => {
+      const { offsetWidth, offsetHeight } = element;
+      if (offsetWidth > 0 && offsetHeight > 0) {
+        setPath(`path('M 0 0 H ${offsetWidth} V ${offsetHeight} H 0 V 0')`);
+      }
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return /* @__PURE__ */ jsxs(
+    "div",
+    {
+      ref,
+      className: cn("relative rounded-[11px] p-px", className),
+      style: {
+        "--star-path": path,
+        "--star-duration": duration,
+        "--star-width": `${width}px`
+      },
+      children: [
+        path ? /* @__PURE__ */ jsx("span", { "aria-hidden": "true", className: "star-light" }) : null,
+        children
+      ]
+    }
+  );
+}
 const PANEL_STATE = {
   done: { glyph: "✓", label: "done", tone: "text-ok" },
   failed: { glyph: "✗", label: "failed", tone: "text-fail" },
@@ -4981,7 +5021,11 @@ function Headline({ headline, className }) {
 function Home() {
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsx(Shell, { children: /* @__PURE__ */ jsxs("div", { className: "relative grid items-start gap-12 pt-14 pb-10 lg:grid-cols-[1.03fr_0.97fr] lg:gap-[66px] lg:pt-20", children: [
-      /* @__PURE__ */ jsx("div", { "aria-hidden": true, className: "pointer-events-none absolute inset-0 overflow-hidden", children: /* @__PURE__ */ jsx("div", { className: "glow-drift -top-[120px] left-[-90px] h-[520px] w-[520px] rounded-full opacity-70" }) }),
+      /* @__PURE__ */ jsxs("div", { "aria-hidden": true, className: "pointer-events-none absolute inset-0 overflow-hidden", children: [
+        /* @__PURE__ */ jsx("div", { className: "glow-drift -top-[120px] left-[-90px] h-[520px] w-[520px] rounded-full opacity-70" }),
+        /* @__PURE__ */ jsx("div", { className: "aurora-disc -top-[180px] left-[-160px]" }),
+        /* @__PURE__ */ jsx("div", { className: "aurora-disc -bottom-[220px] right-[-140px] hidden opacity-20 lg:block", style: { animationDirection: "reverse" } })
+      ] }),
       /* @__PURE__ */ jsxs("div", { className: "hero-rise relative flex flex-col items-start gap-6", children: [
         /* @__PURE__ */ jsx(Eyebrow, { dot: true, children: HERO.eyebrow }),
         /* @__PURE__ */ jsxs("h1", { className: "display", children: [
@@ -5003,7 +5047,7 @@ function Home() {
           /* @__PURE__ */ jsx(Button, { href: SITE.repo, variant: "ghost", external: true, children: "Star on GitHub" })
         ] })
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "relative w-full", children: /* @__PURE__ */ jsx(TerminalMock, { lines: HERO_TERMINAL, className: "w-full", animate: true }) })
+      /* @__PURE__ */ jsx(StarBorder, { className: "w-full", duration: 9, width: 190, children: /* @__PURE__ */ jsx(TerminalMock, { lines: HERO_TERMINAL, className: "w-full", animate: true }) })
     ] }) }),
     /* @__PURE__ */ jsx(Shell, { children: /* @__PURE__ */ jsx("ul", { className: "grid gap-3 border-y border-line py-6 sm:grid-cols-2 lg:grid-cols-4", children: PROOF.map((item, index) => {
       const Icon = PROOF_ICONS[item.icon];
