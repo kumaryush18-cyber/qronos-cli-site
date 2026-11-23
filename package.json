@@ -18,7 +18,8 @@
     "serve": "node scripts/serve-static.mjs dist 4173",
     "check:a11y": "node scripts/check.mjs",
     "check:motion": "node scripts/check-motion.mjs",
-    "check:docs": "node scripts/build-doc-sources.mjs --check"
+    "check:docs": "node scripts/build-doc-sources.mjs --check",
+    "assets": "node scripts/og.mjs && node scripts/icons.mjs"
   },
   "dependencies": {
     "@mdx-js/rollup": "^3.1.1",

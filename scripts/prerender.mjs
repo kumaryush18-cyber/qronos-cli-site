@@ -38,7 +38,7 @@ if (!existsSync(TEMPLATE) || !existsSync(SSR_ENTRY)) {
   process.exit(1);
 }
 
-const { render, headTags, jsonLd } = await import(new URL(`../${SSR_ENTRY}`, import.meta.url).href);
+const { render, headTags, jsonLd, breadcrumbJsonLd } = await import(new URL(`../${SSR_ENTRY}`, import.meta.url).href);
 const template = readFileSync(TEMPLATE, "utf8");
 
 /** Put one route's content and head into the built HTML. */
@@ -49,7 +49,7 @@ function pageHtml(route, body) {
   // wrong title in a search result.
   html = html.replace(/<title>[\s\S]*?<\/title>/, headTags(route));
   html = html.replace(/\s*<meta\s+name="description"[\s\S]*?\/>/, "");
-  html = html.replace("</head>", `    ${jsonLd()}\n  </head>`);
+  html = html.replace("</head>", `    ${jsonLd()}\n    ${breadcrumbJsonLd(route)}\n  </head>`);
 
   return html;
 }

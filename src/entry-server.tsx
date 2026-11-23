@@ -6,7 +6,7 @@ import { DocPage } from "./pages/DocPage";
 import { Docs } from "./pages/Docs";
 import { App, registerPages } from "./App";
 
-export { headTags, jsonLd } from "./lib/head-tags";
+export { breadcrumbJsonLd, headTags, jsonLd } from "./lib/head-tags";
 
 // The browser loads these as separate chunks; the server needs them up front so
 // a prerendered docs page contains the article, not a loading line.

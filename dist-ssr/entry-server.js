@@ -5252,6 +5252,21 @@ function headTags(path) {
     `<meta name="twitter:image" content="https://cli.qronos.me/og.png" />`
   ].join("\n    ");
 }
+function breadcrumbJsonLd(path) {
+  const slug = path.startsWith("/docs/") ? path.slice("/docs/".length) : "";
+  const page = slug ? findDoc(slug) : void 0;
+  if (!page) return "";
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://cli.qronos.me/" },
+      { "@type": "ListItem", position: 2, name: "Docs", item: "https://cli.qronos.me/docs" },
+      { "@type": "ListItem", position: 3, name: page.title, item: `https://cli.qronos.me/docs/${page.slug}` }
+    ]
+  };
+  return `<script type="application/ld+json">${JSON.stringify(data)}<\/script>`;
+}
 function jsonLd() {
   const data = {
     "@context": "https://schema.org",
@@ -5302,6 +5317,7 @@ function render(path) {
   });
 }
 export {
+  breadcrumbJsonLd,
   headTags,
   jsonLd,
   render

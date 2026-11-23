@@ -1,0 +1,77 @@
+name: site
+
+# Verify every push and pull request. Nothing here needs a secret, so a fork can
+# run it too.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# One run per branch; a new push cancels the old one instead of racing it.
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify (node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci --legacy-peer-deps
+
+      - name: Generated docs sources are up to date
+        run: npm run check:docs
+
+      - name: Type check
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build (client, server, prerender)
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Serve the built site
+        run: |
+          node scripts/serve-static.mjs dist 4173 &
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null http://127.0.0.1:4173/ && break
+            sleep 1
+          done
+
+      - name: Accessibility, layout shift, dead anchors
+        run: node scripts/check.mjs http://127.0.0.1:4173
+
+      - name: Motion and no-JavaScript readability
+        run: node scripts/check-motion.mjs http://127.0.0.1:4173
+
+      - name: Prerendered HTML really contains the page
+        run: |
+          set -euo pipefail
+          body=$(curl -s http://127.0.0.1:4173/docs/workflows)
+          echo "$body" | grep -q "ultracode" || { echo "docs page has no article text"; exit 1; }
+          echo "$body" | grep -q "<title>Workflows — Qronos CLI</title>" || { echo "wrong title"; exit 1; }
+          curl -s http://127.0.0.1:4173/sitemap.xml | grep -q "/docs/privacy" || { echo "sitemap is missing a page"; exit 1; }
+
+      - name: Upload the built site
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+          retention-days: 5

@@ -1,3 +1,4 @@
+import { findDoc } from "@/content/docs/manifest";
 import { metaFor } from "./seo";
 
 /** Escape text for an HTML attribute or a text node. */
@@ -33,6 +34,28 @@ export function headTags(path: string): string {
     `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`,
     `<meta name="twitter:image" content="https://cli.qronos.me/og.png" />`,
   ].join("\n    ");
+}
+
+/**
+ * Breadcrumb data for a docs page: Home -> Docs -> the page.
+ *
+ * Only for docs, where a search result showing the trail helps.
+ */
+export function breadcrumbJsonLd(path: string): string {
+  const slug = path.startsWith("/docs/") ? path.slice("/docs/".length) : "";
+  const page = slug ? findDoc(slug) : undefined;
+  if (!page) return "";
+
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://cli.qronos.me/" },
+      { "@type": "ListItem", position: 2, name: "Docs", item: "https://cli.qronos.me/docs" },
+      { "@type": "ListItem", position: 3, name: page.title, item: `https://cli.qronos.me/docs/${page.slug}` },
+    ],
+  };
+  return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
 }
 
 /** A small JSON-LD block describing the product. Injected once per page. */

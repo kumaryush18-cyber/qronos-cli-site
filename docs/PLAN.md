@@ -101,6 +101,32 @@ and a real `hydrateRoot` with no recoverable errors.
 referenced today and the file is not written yet), a favicon set beyond the single
 SVG, and `BreadcrumbList` structured data. Those move to P5 with the deploy.
 
+### P5 — Azure and CI
+
+Status: **the code side is done, the account side is waiting on the user.**
+
+- `public/staticwebapp.config.json` — clean URLs, a real 404 with a 404 status,
+  a year of cache for `/assets/*` and `/fonts/*`, no cache for HTML, and the
+  security headers. The CSP allows `'self'` plus one `sha256` hash for the single
+  inline script; a unit test recomputes that hash from `index.html`, so editing
+  the script without updating the policy fails the suite.
+- `.github/workflows/site.yml` — every push and pull request: type check, tests,
+  build, then the browser checks (axe, layout shift, dead anchors, motion,
+  no-JavaScript readability) and a "the HTML really contains the article" curl.
+- `.github/workflows/deploy.yml` — waits for `site` to pass on `main`, downloads
+  its artifact and uploads it to Azure. One secret:
+  `AZURE_STATIC_WEB_APPS_API_TOKEN`. If the secret is missing the job says so
+  instead of failing obscurely.
+- `scripts/og.mjs` and `scripts/icons.mjs` — the share card and the PNG icons are
+  drawn by the browser from the site's own fonts and logo. A generated image was
+  tried first and got the headline text wrong.
+- `docs/DEPLOY.md` — the four-minute portal path, the service-principal path, the
+  DNS records for `cli.qronos.me`, and three commands that prove a deploy.
+
+**Done when** `https://cli.qronos.me/docs/workflows` returns the article in its
+HTML and the Actions tab is green on `main`. **Waiting on:** the Azure account
+step, which needs a human.
+
 ### P5 — Azure
 
 - Static Web App (Free), GitHub Action on push to `main`, PR preview environments.
