@@ -7,3 +7,6 @@ dist/
 .env.*
 !.env.example
 shots/
+
+# Azure service-principal credential, never committed
+.azure/
