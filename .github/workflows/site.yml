@@ -64,10 +64,18 @@ jobs:
       - name: Prerendered HTML really contains the page
         run: |
           set -euo pipefail
-          body=$(curl -s http://127.0.0.1:4173/docs/workflows)
-          echo "$body" | grep -q "ultracode" || { echo "docs page has no article text"; exit 1; }
-          echo "$body" | grep -q "<title>Workflows — Qronos CLI</title>" || { echo "wrong title"; exit 1; }
-          curl -s http://127.0.0.1:4173/sitemap.xml | grep -q "/docs/privacy" || { echo "sitemap is missing a page"; exit 1; }
+          # Grep a file, never a pipe into `grep -q`: grep exits on the first
+          # match, the writer gets SIGPIPE, and `pipefail` then calls it a failure.
+          curl -sf http://127.0.0.1:4173/docs/workflows -o /tmp/workflows.html
+          curl -sf http://127.0.0.1:4173/sitemap.xml -o /tmp/sitemap.xml
+          curl -sf http://127.0.0.1:4173/robots.txt -o /tmp/robots.txt
+
+          grep -q "ultracode" /tmp/workflows.html || { echo "docs page has no article text"; exit 1; }
+          grep -q "<title>Workflows — Qronos CLI</title>" /tmp/workflows.html || { echo "wrong title"; exit 1; }
+          grep -q "BreadcrumbList" /tmp/workflows.html || { echo "no breadcrumb data"; exit 1; }
+          grep -q "/docs/privacy" /tmp/sitemap.xml || { echo "sitemap is missing a page"; exit 1; }
+          grep -q "Sitemap:" /tmp/robots.txt || { echo "robots.txt does not point at the sitemap"; exit 1; }
+          echo "the HTML holds the article, the title, the breadcrumb and the sitemap"
 
       - name: Upload the built site
         uses: actions/upload-artifact@v4
