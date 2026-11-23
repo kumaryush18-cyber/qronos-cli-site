@@ -1,0 +1,39 @@
+{
+  "name": "qronos-cli-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Marketing site and documentation for Qronos CLI",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.453.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "tailwind-merge": "^3.3.1",
+    "wouter": "^3.7.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.3",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^8.0.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "jsdom": "^25.0.1",
+    "playwright": "^1.65.1",
+    "tailwindcss": "^4.1.14",
+    "typescript": "5.9.3",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.4"
+  }
+}

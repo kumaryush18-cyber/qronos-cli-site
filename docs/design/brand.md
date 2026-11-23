@@ -79,12 +79,12 @@ Rules:
 shell      1220px, padding 28px (22px under 820px)
 nav        78px tall, blurred, 1px bottom border
 hero       grid 1.03fr / 0.97fr, gap 66px
-sections   padding 130px 28px (78px 22px on mobile)
+sections   padding 112px 28px (78px 22px on mobile)
 grid gaps  14px between cards
 radius     14px cards · 18px panels · 999px chips · 9px buttons
 ```
 
-Spacing scale — only these numbers: `4 8 12 16 24 32 48 72 96 130`.
+Spacing scale — only these numbers: `4 8 12 16 24 32 48 72 96 112`.
 
 Breakpoints: `480`, `820`, `1100`. Every page must read at **320px** without horizontal
 scroll. Cards in a grid always have equal heights.

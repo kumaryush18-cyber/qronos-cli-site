@@ -14,7 +14,7 @@ Qronos AI client, so the two sites feel like one family.
 
 ## Phases
 
-### P0 — Brand and copy (this phase)
+### P0 — Brand and copy — done
 
 - `docs/design/brand.md` — tokens, type, layout, motion, components, voice.
 - `docs/design/copy.md` — every string that will appear on the site.
@@ -22,7 +22,7 @@ Qronos AI client, so the two sites feel like one family.
 
 **Done when** the tokens and the copy are approved. No layout code yet.
 
-### P1 — Shell and design system
+### P1 — Shell and design system — done
 
 - Vite + React + TS + Tailwind 4 project, `wouter` router, `lucide-react`.
 - Design tokens in `src/styles/tokens.css` (Tailwind `@theme inline`), fonts, reset.
@@ -34,6 +34,9 @@ Qronos AI client, so the two sites feel like one family.
 
 **Done when** every route renders real copy from `copy.md` and the site has no
 layout shift when fonts load.
+
+Shipped: 11 test files, 84 tests, `tsc` clean, `vite build` clean, screenshots at
+390 / 820 / 1440 with no console error and no sideways scroll.
 
 ### P2 — Landing page
 

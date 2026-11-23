@@ -1,0 +1,221 @@
+/* Base element styles and the handful of utilities that are not utilities. */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--line);
+  }
+
+  html {
+    background: var(--paper);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--orange);
+    color: #07070a;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+  }
+
+  /* One focus style, everywhere, never removed. */
+  :focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Buttons are buttons: no default chrome, but keep the cursor honest. */
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+/* --- Two animations, and they both stop for reduced motion. --------------- */
+
+@keyframes qronos-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes qronos-shimmer {
+  from {
+    background-position: -140% 0;
+  }
+  to {
+    background-position: 240% 0;
+  }
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  translate: 0 0.18em;
+  background: var(--orange-pale);
+  animation: qronos-cursor 1s step-end infinite;
+}
+
+/*
+ * The wordmark shimmer. A pale band travels across the letters every 3 s —
+ * the same period as the CLI's own working line (SHIMMER_PERIOD_MS = 3_000).
+ */
+.shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--ink) 0%,
+    var(--ink) 38%,
+    var(--orange-pale) 50%,
+    var(--ink) 62%,
+    var(--ink) 100%
+  );
+  background-size: 220% 100%;
+  background-position: -140% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: qronos-shimmer var(--shimmer-period) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .cursor,
+  .shimmer {
+    animation: none;
+  }
+
+  .shimmer {
+    background: none;
+    color: var(--ink);
+    -webkit-text-fill-color: currentColor;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}
+
+/* --- Small readable helpers ---------------------------------------------- */
+
+/* Mono label: the uppercase 10px tag above every section. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The italic serif word inside a headline. */
+.display em,
+.serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  color: var(--orange-pale);
+}
+
+.display {
+  font-size: clamp(48px, 5.2vw, 75px);
+  line-height: 0.99;
+  letter-spacing: -0.068em;
+}
+
+.heading {
+  font-size: clamp(37px, 4.2vw, 58px);
+  line-height: 1.03;
+  letter-spacing: -0.066em;
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+  max-width: 34rem;
+}
+
+/*
+ * Screen-reader only. `overflow: hidden` is not optional: an absolutely
+ * positioned box whose text overflows still grows the document's scrollable
+ * width, and the terminal's text alternative made the page scroll sideways on
+ * a phone until this line was added.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

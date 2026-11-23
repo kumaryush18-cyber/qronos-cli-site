@@ -1,0 +1,264 @@
+import {
+  Brain,
+  Check,
+  Code2,
+  KeyRound,
+  ReceiptText,
+  ShieldCheck,
+  Terminal,
+  TextQuote,
+  Timer,
+  Workflow,
+} from "lucide-react";
+import { Eyebrow } from "@/components/layout/Eyebrow";
+import { Section, Shell } from "@/components/layout/Shell";
+import { TerminalMock } from "@/components/terminal/TerminalMock";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Callout } from "@/components/ui/Callout";
+import { CodePanel } from "@/components/ui/CodePanel";
+import { CompareTable } from "@/components/ui/CompareTable";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { FeatureCard } from "@/components/ui/FeatureCard";
+import {
+  CLOSING,
+  COMPARISON,
+  FAQ,
+  FEATURES,
+  HERO,
+  HERO_TERMINAL,
+  PROOF,
+  QUICKSTART,
+  WORKFLOWS,
+} from "@/lib/copy";
+import { SITE } from "@/lib/site";
+
+const FEATURE_ICONS = [Workflow, ReceiptText, TextQuote, Brain, Code2, ShieldCheck] as const;
+const PROOF_ICONS = { tick: Check, clock: Timer, key: KeyRound, terminal: Terminal } as const;
+
+interface Headline {
+  readonly before: string;
+  readonly accent: string;
+  readonly after: string;
+}
+
+/** The one-word serif accent inside a headline. */
+function Headline({ headline, className }: { headline: Headline; className?: string }) {
+  return (
+    <h2 className={className}>
+      {headline.before}
+      <em>{headline.accent}</em>
+      {headline.after}
+    </h2>
+  );
+}
+
+export function Home() {
+  return (
+    <>
+      {/* --- Hero ---------------------------------------------------------- */}
+      <Shell>
+        <div className="grid items-start gap-12 pt-14 pb-10 lg:grid-cols-[1.03fr_0.97fr] lg:gap-[66px] lg:pt-20">
+          <div className="flex flex-col items-start gap-6">
+            <Eyebrow dot>{HERO.eyebrow}</Eyebrow>
+            <h1 className="display">
+              {HERO.headline.before}
+              <em>{HERO.headline.accent}</em>
+              {HERO.headline.after}
+            </h1>
+            <p className="lead">{HERO.sub}</p>
+
+            <div className="flex w-full max-w-[420px] flex-col gap-2">
+              <div className="flex items-center gap-2 rounded-[9px] border border-line bg-card px-3 py-2">
+                <span aria-hidden className="font-mono text-[12px] text-orange">
+                  $
+                </span>
+                <code className="font-mono text-[12.5px] text-ink">{SITE.install}</code>
+                <CopyButton text={SITE.install} className="ml-auto border-transparent px-2 py-1" live={false} />
+              </div>
+              <p className="font-mono text-[11px] text-muted">{HERO.installNote}</p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Button href="/docs">Read the docs →</Button>
+              <Button href={SITE.repo} variant="ghost" external>
+                Star on GitHub
+              </Button>
+            </div>
+          </div>
+
+          <TerminalMock lines={HERO_TERMINAL} className="w-full" />
+        </div>
+      </Shell>
+
+      {/* --- Proof strip --------------------------------------------------- */}
+      <Shell>
+        <ul className="grid gap-3 border-y border-line py-6 sm:grid-cols-2 lg:grid-cols-4">
+          {PROOF.map((item) => {
+            const Icon = PROOF_ICONS[item.icon];
+            return (
+              <li key={item.text} className="flex items-start gap-2.5 text-[12.5px] text-muted">
+                <Icon size={15} strokeWidth={2} aria-hidden className="mt-[2px] shrink-0 text-orange" />
+                {item.text}
+              </li>
+            );
+          })}
+        </ul>
+      </Shell>
+
+      {/* --- Features ------------------------------------------------------ */}
+      <Section id="features" labelledBy="features-heading">
+        <div className="flex flex-col gap-4">
+          <Eyebrow>What it does</Eyebrow>
+          <h2 id="features-heading" className="heading">
+            Six things you can watch it <em className="serif-accent">do</em>.
+          </h2>
+        </div>
+
+        <div className="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((feature, index) => (
+            <FeatureCard
+              key={feature.id}
+              step={feature.id}
+              title={feature.title}
+              body={feature.body}
+              icon={FEATURE_ICONS[index] ?? Workflow}
+            />
+          ))}
+        </div>
+      </Section>
+
+      {/* --- Workflows ----------------------------------------------------- */}
+      <Section id="workflows" labelledBy="workflows-heading" className="border-t border-line">
+        <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:gap-[66px]">
+          <div className="flex min-w-0 flex-col gap-5">
+            <Eyebrow>{WORKFLOWS.eyebrow}</Eyebrow>
+            <Headline headline={WORKFLOWS.headline} className="heading" />
+            <p className="lead">{WORKFLOWS.body}</p>
+
+            <ul className="mt-2 flex flex-col gap-5">
+              {WORKFLOWS.bullets.map((bullet) => (
+                <li key={bullet.title} className="border-l border-line pl-4">
+                  <p className="text-[14px] font-bold text-ink">{bullet.title}</p>
+                  <p className="mt-1 text-[13.5px] leading-relaxed text-muted">{bullet.body}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-3 self-start rounded-panel border border-line bg-card p-5">
+            <div className="flex items-center justify-between">
+              <Badge tone="orange">run wf_9k2 · live</Badge>
+              <span className="font-mono text-[11px] text-muted">09:41</span>
+            </div>
+
+            <ul className="mt-2 flex flex-col divide-y divide-line">
+              {WORKFLOWS.panel.map((row) => (
+                <li key={row.phase} className="flex items-center gap-3 py-3">
+                  <span aria-hidden className="size-1.5 rounded-full bg-ok" />
+                  <span className="text-[13px] text-ink">{row.phase}</span>
+                  <span className="font-mono text-[11px] text-muted">{row.agents}</span>
+                  <span className="ml-auto font-mono text-[11px] text-muted">{row.tokens}</span>
+                  <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-orange">{row.note}</span>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">{WORKFLOWS.panelHint}</p>
+          </div>
+        </div>
+      </Section>
+
+      {/* --- Comparison ---------------------------------------------------- */}
+      <Section labelledBy="compare-heading" className="border-t border-line">
+        <div className="flex flex-col gap-4">
+          <Eyebrow>How it compares</Eyebrow>
+          <h2 id="compare-heading" className="heading">
+            Different in <em className="serif-accent">four</em> ways that matter.
+          </h2>
+        </div>
+        <CompareTable rows={COMPARISON.rows} footnote={COMPARISON.footnote} className="mt-10" />
+      </Section>
+
+      {/* --- Quickstart ---------------------------------------------------- */}
+      <Section labelledBy="quickstart-heading" className="border-t border-line">
+        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-[66px]">
+          <div className="flex min-w-0 flex-col gap-5">
+            <Eyebrow>Quickstart</Eyebrow>
+            <Headline headline={QUICKSTART.headline} className="heading" />
+            <p className="lead">{QUICKSTART.body}</p>
+
+            <ol className="mt-2 flex flex-col gap-4">
+              {QUICKSTART.steps.map((step, index) => (
+                <li key={step.title} className="flex gap-3">
+                  <span className="mt-[1px] grid size-6 shrink-0 place-items-center rounded-full border border-orange-line font-mono text-[11px] text-orange">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <p className="text-[13.5px] font-bold text-ink">{step.title}</p>
+                    <p className="font-mono text-[11.5px] leading-relaxed break-words text-muted">{step.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-4">
+            <CodePanel code={SITE.install} label="first run" />
+            <CodePanel code={QUICKSTART.byok.join("\n")} label="bring your own key" />
+            <Callout tone="honest">{QUICKSTART.keyNote}</Callout>
+          </div>
+        </div>
+      </Section>
+
+      {/* --- FAQ ----------------------------------------------------------- */}
+      <Section labelledBy="faq-heading" className="border-t border-line">
+        <div className="flex flex-col gap-4">
+          <Eyebrow>Questions</Eyebrow>
+          <h2 id="faq-heading" className="heading">
+            The things people <em className="serif-accent">ask</em>.
+          </h2>
+        </div>
+
+        <div className="mt-10 flex flex-col divide-y divide-line border-y border-line">
+          {FAQ.map((item) => (
+            <details key={item.question} className="group py-4">
+              <summary className="flex cursor-pointer items-center gap-3 text-[14.5px] font-bold text-ink marker:content-none">
+                <span className="font-mono text-[11px] text-orange transition-transform duration-[160ms] group-open:rotate-90">
+                  ▸
+                </span>
+                {item.question}
+              </summary>
+              <p className="mt-3 max-w-[68ch] pl-6 text-[13.5px] leading-[1.75] text-muted">{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </Section>
+
+      {/* --- Closing CTA --------------------------------------------------- */}
+      <Section className="border-t border-line" spacing="tight">
+        <div className="flex flex-col items-center gap-5 py-8 text-center">
+          <div aria-hidden className="flex gap-1.5">
+            <span className="size-1.5 rounded-full bg-orange-pale/90" />
+            <span className="size-1.5 rounded-full bg-orange-pale/60" />
+            <span className="size-1.5 rounded-full bg-orange-pale/30" />
+          </div>
+          <Eyebrow>{CLOSING.eyebrow}</Eyebrow>
+          <Headline headline={CLOSING.headline} className="heading max-w-[18ch]" />
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <CopyButton
+              text={SITE.install}
+              label="Install Qronos CLI"
+              className="border-orange-line bg-orange-soft px-6 py-3.5 text-[13px] font-extrabold text-orange hover:text-orange-pale"
+              live={false}
+            />
+            <Button href="/docs" variant="ghost">
+              Read the docs
+            </Button>
+          </div>
+          <p className="font-mono text-[11px] text-muted">{CLOSING.micro}</p>
+        </div>
+      </Section>
+    </>
+  );
+}

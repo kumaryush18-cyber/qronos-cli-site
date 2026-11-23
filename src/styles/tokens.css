@@ -1,0 +1,68 @@
+/*
+ * Design tokens — the only place a colour, radius or motion value is allowed.
+ * Every value is checked against docs/design/brand.md. If a component needs a
+ * new colour, it is added here first, with its contrast note.
+ */
+:root {
+  /* Surfaces */
+  --paper: #07070a;
+  --card: #0e0e12;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --ink: #f7f8fc; /* 18.9:1 on paper */
+  --muted: #a8a8b6; /*  8.6:1 on paper */
+
+  /* Brand */
+  --orange: #ff6b00; /*  7.1:1 on paper */
+  --orange-pale: #ffcd82; /* 13.7:1 on paper */
+  --orange-soft: rgba(255, 107, 0, 0.12);
+  --orange-line: rgba(255, 107, 0, 0.34);
+  --orange-glow: rgba(255, 107, 0, 0.22); /* the only glow: primary button hover */
+
+  /* State. A stopped agent is amber, never red. */
+  --ok: #2ee676;
+  --fail: #ff5f6d;
+  --stop: #ffcd82;
+
+  /* Motion — two animations, see brand.md §5 */
+  --shimmer-period: 3000ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-hover: 160ms;
+  --dur-panel: 240ms;
+
+  /* Shape */
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --radius-button: 9px;
+}
+
+/*
+ * Tailwind 4 theme: turns the variables above into utilities (bg-paper,
+ * text-muted, border-line, font-mono ...). `inline` keeps the var() reference,
+ * so a theme switch would only need new values on :root.
+ */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-orange: var(--orange);
+  --color-orange-pale: var(--orange-pale);
+  --color-orange-soft: var(--orange-soft);
+  --color-orange-line: var(--orange-line);
+  --color-ok: var(--ok);
+  --color-fail: var(--fail);
+  --color-stop: var(--stop);
+
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Playfair Display", Georgia, serif;
+
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --radius-button: 9px;
+}

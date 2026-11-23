@@ -2,11 +2,24 @@
 
 Marketing site and documentation for [Qronos CLI](https://github.com/kumaryush18-cyber/qronos-cli).
 
-**Status: phase P0 (brand + copy). No application code yet.**
+**Status: phase P1 done.** The shell, tokens, components and all five routes exist
+and render the real copy. The landing page gets its polish in P2 and the docs bodies
+arrive in P3.
 
 - Stack (planned): React 19 · Vite 7 · TypeScript · Tailwind 4 · wouter
 - Target URL: https://cli.qronos.me (docs under `/docs`)
 - Hosting: Azure Static Web Apps (Free plan)
+
+## Run it
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm test         # 84 tests
+npm run lint     # tsc --noEmit
+npm run build    # dist/ — plain files for Azure
+node scripts/shoot.mjs   # screenshots + overflow check (needs `npm run preview`)
+```
 
 ## Read first
 
