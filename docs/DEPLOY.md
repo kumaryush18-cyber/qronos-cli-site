@@ -8,14 +8,29 @@ Apps** (free tier) at **https://cli.qronos.me**.
 
 | File | Job |
 | :--- | :--- |
-| `.github/workflows/site.yml` | On every push and pull request: type check, tests, build, then axe / layout-shift / dead-anchor / motion checks in a real browser. Uploads `dist`. |
-| `.github/workflows/deploy.yml` | After `site` passes on `main`: downloads that `dist` and uploads it to Azure. Needs one secret. |
+| `.github/workflows/site.yml` | Two jobs. `verify` runs on every push and pull request: type check, tests, build, then axe / layout-shift / dead-anchor / motion checks in a real browser, and uploads `dist`. `deploy` waits for it, and only on `main`, uploads that exact artifact to Azure. |
 | `public/staticwebapp.config.json` | Clean URLs, a real 404, long cache for hashed assets, and the security headers (including a CSP that allows one hashed inline script and nothing else). |
 | `scripts/og.mjs`, `scripts/icons.mjs` | Rebuild `og.png` and the PNG icons from the site's own fonts and logo. `npm run assets`. |
 
 ## The one step only you can do
 
 Azure needs an account, and the deployment token is a credential. Two ways:
+
+### It is already created
+
+The Static Web App exists:
+
+| What | Value |
+| :--- | :--- |
+| Resource group | `qronos-site-rg` (West Europe) |
+| Name | `qronos-cli-site` |
+| Plan | Free |
+| Region | **East Asia** — the subscription's policy refused West Europe and the other usual regions |
+| Host name | `purple-ocean-0d9529800.5.azurestaticapps.net` |
+| Secret | `AZURE_STATIC_WEB_APPS_API_TOKEN` is set on the repo |
+
+The two sections below are for a fresh subscription, or if this one is ever
+recreated.
 
 ### A. You create it in the portal (about four minutes)
 

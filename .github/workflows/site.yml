@@ -83,3 +83,42 @@ jobs:
           name: site-dist
           path: dist
           retention-days: 5
+
+  deploy:
+    name: deploy to Azure Static Web Apps
+    # Only a green verify on main goes out. A pull request stops at `verify`.
+    needs: verify
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://cli.qronos.me
+    steps:
+      - name: Check the deployment token exists
+        env:
+          TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::AZURE_STATIC_WEB_APPS_API_TOKEN is not set. Add it under Settings → Secrets → Actions."
+            exit 1
+          fi
+
+      # The artifact comes from the job that just verified this exact commit, so
+      # what is deployed is byte for byte what the checks ran against.
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+
+      - name: Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: "/"
+          api_location: ""
+          output_location: "dist"
+          # The build already happened in `verify`; Azure only uploads.
+          skip_app_build: true
