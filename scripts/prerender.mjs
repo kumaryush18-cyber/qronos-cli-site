@@ -84,9 +84,13 @@ count += 1;
 // robots.txt and sitemap.xml, generated from the same list of routes so a new
 // page cannot be forgotten.
 const today = new Date().toISOString().slice(0, 10);
+// The sitemap must list the URL that answers 200, not the one that redirects:
+// docs pages are directories, so they carry a trailing slash.
 const urls = ROUTES.map((route) => {
-  const loc = route === "/" ? "https://cli.qronos.me/" : `https://cli.qronos.me${route}`;
-  return `  <url><loc>${loc}</loc><lastmod>${today}</lastmod></url>`;
+  const bare = route.replace(/\/+$/, "");
+  const dir = bare === "/" ? "" : bare;
+  const path = dir === "" ? "/" : dir.startsWith("/docs") ? `${dir}/` : dir;
+  return `  <url><loc>https://cli.qronos.me${path}</loc><lastmod>${today}</lastmod></url>`;
 }).join("\n");
 
 writeFileSync(

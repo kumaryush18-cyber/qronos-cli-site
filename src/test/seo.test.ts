@@ -9,8 +9,19 @@ describe("canonicalFor", () => {
     expect(canonicalFor("/")).toBe(SITE.url);
   });
 
-  it("drops a trailing slash and any query or hash", () => {
-    expect(canonicalFor("/docs/workflows/?from=nav#top")).toBe(`${SITE.url}/docs/workflows`);
+  it("drops any query or hash", () => {
+    expect(canonicalFor("/docs/workflows/?from=nav#top")).toBe(`${SITE.url}/docs/workflows/`);
+  });
+
+  it("keeps one trailing slash on a docs page, because that is the URL that answers 200", () => {
+    expect(canonicalFor("/docs/workflows")).toBe(`${SITE.url}/docs/workflows/`);
+    expect(canonicalFor("/docs/workflows/")).toBe(`${SITE.url}/docs/workflows/`);
+    expect(canonicalFor("/docs")).toBe(`${SITE.url}/docs/`);
+  });
+
+  it("gives the home page no trailing slash", () => {
+    expect(canonicalFor("/")).toBe(SITE.url);
+    expect(canonicalFor("/changelog")).toBe(`${SITE.url}/changelog`);
   });
 });
 
@@ -65,7 +76,7 @@ describe("applyMeta", () => {
       "Every slash command, what it does, and what it costs.",
     );
     expect(doc.head.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(
-      `${SITE.url}/docs/commands`,
+      `${SITE.url}/docs/commands/`,
     );
     expect(doc.head.querySelector('meta[property="og:title"]')?.getAttribute("content")).toBe(
       "Commands — Qronos CLI",

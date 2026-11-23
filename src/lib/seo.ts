@@ -37,11 +37,20 @@ const STATIC: Record<string, PageMeta> = {
   },
 };
 
-/** Absolute URL for a route, without a trailing slash (except the root). */
+/**
+ * Absolute URL for a route.
+ *
+ * A docs page is a directory on the host, so `/docs/workflows` answers with a
+ * 301 to `/docs/workflows/`. The canonical form is the URL that answers 200: a
+ * canonical that points at a redirect is a small lie that costs a round trip.
+ * The home page is a file and keeps no trailing slash.
+ */
 export function canonicalFor(path: string): string {
   const clean = path.split("?")[0]?.split("#")[0] ?? "/";
   if (clean === "/" || clean === "") return SITE.url;
-  return `${SITE.url}${clean.replace(/\/+$/, "")}`;
+  const bare = clean.replace(/\/+$/, "");
+  if (bare === "/docs" || bare.startsWith("/docs/")) return `${SITE.url}${bare}/`;
+  return `${SITE.url}${bare}`;
 }
 
 export function metaFor(path: string): PageMeta {

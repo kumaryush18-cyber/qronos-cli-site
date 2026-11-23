@@ -4469,7 +4469,9 @@ const STATIC = {
 function canonicalFor(path) {
   const clean = path.split("?")[0]?.split("#")[0] ?? "/";
   if (clean === "/" || clean === "") return SITE.url;
-  return `${SITE.url}${clean.replace(/\/+$/, "")}`;
+  const bare = clean.replace(/\/+$/, "");
+  if (bare === "/docs" || bare.startsWith("/docs/")) return `${SITE.url}${bare}/`;
+  return `${SITE.url}${bare}`;
 }
 function metaFor(path) {
   const clean = (path.split("?")[0] ?? "/").split("#")[0] ?? "/";
