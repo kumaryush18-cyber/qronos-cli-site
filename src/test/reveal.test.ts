@@ -43,14 +43,16 @@ describe("buildRevealTimeline", () => {
     expect(prompt.atMs - summary.atMs).toBeGreaterThanOrEqual(900);
   });
 
-  it("finishes in about three seconds with the default timings", () => {
+  it("finishes in under two seconds with the default timings", () => {
+    // The typing is the showpiece, but it is also the largest paint on a phone:
+    // a long reveal pushes the largest-contentful-paint time later.
     const duration = revealDuration(buildRevealTimeline(lines));
-    expect(duration).toBeGreaterThan(1000);
-    expect(duration).toBeLessThan(4000);
+    expect(duration).toBeGreaterThan(600);
+    expect(duration).toBeLessThan(2000);
   });
 
   it("uses the documented default character speed", () => {
-    expect(DEFAULT_REVEAL.charMs).toBe(18);
+    expect(DEFAULT_REVEAL.charMs).toBe(16);
   });
 
   it("survives a line with no text", () => {

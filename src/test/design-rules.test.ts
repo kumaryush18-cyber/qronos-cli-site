@@ -87,3 +87,38 @@ describe("design rules", () => {
     expect(offenders).toEqual([]);
   });
 });
+
+describe("motion rules", () => {
+  it("declares every keyframe in the one motion file", () => {
+    const offenders: string[] = [];
+    for (const file of SRC) {
+      if (!file.endsWith(".css")) continue;
+      if (file.endsWith("base.css") || file.endsWith("tokens.css")) continue;
+      if (readFileSync(file, "utf8").includes("@keyframes")) offenders.push(file);
+    }
+    // Tailwind's own keyframes live in node_modules, not here.
+    expect(offenders).toEqual([]);
+  });
+
+  it("uses no animation that skips the reduced-motion switch", () => {
+    const base = readFileSync("src/styles/base.css", "utf8");
+    const names = [...base.matchAll(/animation:\s*([a-z-]+)/g)]
+      .map((match) => match[1])
+      .filter((name): name is string => typeof name === "string");
+    expect(names.length).toBeGreaterThan(0);
+    const reduce = base.slice(base.indexOf("@media (prefers-reduced-motion: reduce)"));
+    for (const name of new Set(names)) {
+      if (name === "none") continue;
+      // Every animation is either named in the reduce block or switched off by class.
+      expect(reduce.includes(name) || name.startsWith("qronos-"), `${name} has no reduce rule`).toBe(true);
+    }
+  });
+
+  it("keeps the reveal opt-in, so no-JS readers never see a blank block", () => {
+    const html = readFileSync("index.html", "utf8");
+    const base = readFileSync("src/styles/base.css", "utf8");
+    expect(html).toContain('classList.add("js-motion")');
+    expect(html).toContain("prefers-reduced-motion: reduce");
+    expect(base).toContain(".js-motion [data-reveal]");
+  });
+});

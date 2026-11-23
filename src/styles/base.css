@@ -113,7 +113,136 @@
   }
 }
 
-/* --- Two animations, and they both stop for reduced motion. --------------- */
+/* --- Motion ---------------------------------------------------------------
+ *
+ * Every animation here is decorative: if it were removed the page would still
+ * work and read the same. They are all switched off under
+ * `prefers-reduced-motion: reduce`, and the reveal is opt-in from JavaScript
+ * (see the inline script in index.html), so a reader with no JavaScript or with
+ * reduced motion sees the content immediately instead of a blank block.
+ */
+
+@keyframes qronos-rise {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes qronos-rise-soft {
+  from {
+    translate: 0 16px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes qronos-drift {
+  from {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes qronos-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes qronos-underline {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+/*
+ * Scroll reveal. `.js-motion` is set by a one-line script in <head> before the
+ * first paint and only when the reader has not asked for reduced motion, so the
+ * hidden state can never be the state a no-JS reader is stuck with.
+ */
+.js-motion [data-reveal] {
+  opacity: 0;
+  translate: 0 14px;
+}
+
+.js-motion [data-reveal].is-in {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 620ms var(--ease-out),
+    translate 620ms var(--ease-out);
+}
+
+/* Stagger, written out: a custom property in an inline style breaks hydration. */
+.js-motion [data-reveal][data-i="1"].is-in { transition-delay: 55ms; }
+.js-motion [data-reveal][data-i="2"].is-in { transition-delay: 110ms; }
+.js-motion [data-reveal][data-i="3"].is-in { transition-delay: 165ms; }
+.js-motion [data-reveal][data-i="4"].is-in { transition-delay: 220ms; }
+.js-motion [data-reveal][data-i="5"].is-in { transition-delay: 275ms; }
+.js-motion [data-reveal][data-i="6"].is-in { transition-delay: 330ms; }
+.js-motion [data-reveal][data-i="7"].is-in { transition-delay: 385ms; }
+.js-motion [data-reveal][data-i="8"].is-in { transition-delay: 440ms; }
+
+/*
+ * The hero entrance. Translation only, never opacity: the headline is painted at
+ * full strength from the first frame, so the largest-contentful-paint time is not
+ * pushed to the end of an animation.
+ */
+.js-motion .hero-rise {
+  animation: qronos-rise-soft 720ms var(--ease-out) both;
+}
+
+.js-motion .hero-rise[data-i="1"] {
+  animation-delay: 90ms;
+}
+
+/* The soft orange light behind the hero. It drifts, it never blinks. */
+.glow-drift {
+  position: absolute;
+  pointer-events: none;
+  background: radial-gradient(48% 48% at 50% 50%, var(--orange-glow) 0%, transparent 70%);
+  filter: blur(14px);
+  animation: qronos-drift 26s ease-in-out infinite alternate;
+}
+
+/* A running agent's dot breathes; a finished one does not. */
+.run-dot {
+  animation: qronos-pulse 1.8s ease-in-out infinite;
+}
+
+/* Nav link underline that grows from the left on hover and focus. */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  background: var(--orange);
+  transform-origin: left center;
+  scale: 0 1;
+  transition: scale var(--dur-hover) var(--ease-out);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  scale: 1 1;
+}
 
 @keyframes qronos-cursor {
   50% {
@@ -160,29 +289,7 @@
   animation: qronos-shimmer var(--shimmer-period) linear infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  .cursor,
-  .shimmer {
-    animation: none;
-  }
-
-  .shimmer {
-    background: none;
-    color: var(--ink);
-    -webkit-text-fill-color: currentColor;
-  }
-
-  *,
-  *::before,
-  *::after {
-    transition-duration: 1ms !important;
-    animation-duration: 1ms !important;
-  }
-}
+/* --- Cursor and shimmer --------------------------------------------------- */
 
 /* --- Small readable helpers ---------------------------------------------- */
 
@@ -245,4 +352,41 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .cursor,
+  .shimmer,
+  .glow-drift,
+  .run-dot,
+  .hero-rise {
+    animation: none;
+  }
+
+  .js-motion [data-reveal] {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+
+  .shimmer {
+    background: none;
+    color: var(--ink);
+    -webkit-text-fill-color: currentColor;
+  }
+
+  .nav-link::after {
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
 }

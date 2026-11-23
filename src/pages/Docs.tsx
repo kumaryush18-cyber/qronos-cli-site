@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { DocsSidebar } from "@/components/docs/DocsSidebar";
 import { Eyebrow } from "@/components/layout/Eyebrow";
 import { Shell } from "@/components/layout/Shell";
+import { Reveal } from "@/components/ui/Reveal";
 import { groupedDocs } from "@/content/docs/manifest";
 
 export function Docs() {
@@ -22,8 +23,8 @@ export function Docs() {
             </p>
           </header>
 
-          {groupedDocs().map(({ group, pages }) => (
-            <section key={group} className="flex flex-col gap-3">
+          {groupedDocs().map(({ group, pages }, groupIndex) => (
+            <Reveal key={group} index={groupIndex} as="section" className="flex flex-col gap-3">
               <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-muted">{group}</h2>
               <ul className="grid gap-3 sm:grid-cols-2">
                 {pages.map((page) => (
@@ -45,7 +46,7 @@ export function Docs() {
                   </li>
                 ))}
               </ul>
-            </section>
+            </Reveal>
           ))}
         </div>
       </div>

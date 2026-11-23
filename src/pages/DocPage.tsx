@@ -7,6 +7,7 @@ import { Shell } from "@/components/layout/Shell";
 import { Callout } from "@/components/ui/Callout";
 import { docNeighbours, findDoc } from "@/content/docs/manifest";
 import { docBody, docHeadings } from "@/content/docs/registry";
+import { Reveal } from "@/components/ui/Reveal";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { NotFound } from "./NotFound";
 
@@ -45,11 +46,11 @@ export function DocPage({ slug }: { slug: string }) {
         </aside>
 
         <article className="flex min-w-0 max-w-[735px] flex-col">
-          <header className="flex flex-col gap-3 border-b border-line pb-6">
+          <Reveal as="header" className="flex flex-col gap-3 border-b border-line pb-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">{page.group}</p>
             <h1 className="text-[clamp(30px,4vw,42px)] leading-[1.06] tracking-[-0.06em]">{page.title}</h1>
             <p className="text-[14px] leading-relaxed text-muted">{page.intro}</p>
-          </header>
+          </Reveal>
 
           {headings.length > 0 && !wide ? (
             <details className="my-6 rounded-card border border-line bg-card p-3">
@@ -60,9 +61,9 @@ export function DocPage({ slug }: { slug: string }) {
             </details>
           ) : null}
 
-          <div className="min-w-0 pt-6">
+          <Reveal index={1} className="min-w-0 pt-6">
             <Body components={mdxComponents} />
-          </div>
+          </Reveal>
 
           <Callout tone="honest" title="Found a mistake?">
             This page is generated from the CLI repository. If something here does not match what the tool does,

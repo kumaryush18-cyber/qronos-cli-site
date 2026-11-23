@@ -25,8 +25,14 @@ const problems = [];
 for (const width of WIDTHS) {
   const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
   const page = await context.newPage();
+  // The 404 route is meant to answer 404; the browser logs that as a console
+  // error and it is not a defect.
+  const expected404 = (url) => url.endsWith("/nope");
+
   page.on("console", (message) => {
-    if (message.type() === "error") problems.push(`${width} console: ${message.text()}`);
+    if (message.type() !== "error") return;
+    if (message.text().includes("404") && page.url().endsWith("/nope")) return;
+    problems.push(`${width} console: ${message.text()}`);
   });
   page.on("pageerror", (error) => problems.push(`${width} pageerror: ${error.message}`));
 

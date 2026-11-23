@@ -42,7 +42,7 @@ export function TerminalMock({ lines, title = "qronos", className, animate = fal
         <span className="ml-auto font-mono text-[11px] uppercase tracking-[0.16em] text-muted">zsh</span>
       </div>
 
-      <div className="min-h-[196px] px-4 py-4 font-mono text-[12px] leading-[1.85] sm:text-[12.5px]">
+      <div className="min-h-[236px] px-4 py-4 font-mono text-[12px] leading-[1.85] sm:text-[12.5px]">
         {lines.slice(0, visible).map((line, index) => (
           <TerminalRow key={`${line.kind}-${index}`} line={line} shownChars={commandChars.get(index)} />
         ))}

@@ -6,12 +6,19 @@
   "description": "Marketing site and documentation for Qronos CLI",
   "scripts": {
     "dev": "vite",
-    "build": "npm run docs:index && tsc --noEmit && vite build",
-    "preview": "vite preview",
+    "build": "npm run docs:index && tsc --noEmit && npm run build:client && npm run build:ssr && npm run prerender",
+    "preview": "node scripts/serve-static.mjs dist 4173",
     "lint": "tsc --noEmit",
     "test": "npm run docs:index && vitest run",
     "docs:index": "node scripts/build-doc-sources.mjs",
-    "docs:check": "node scripts/build-doc-sources.mjs --check"
+    "docs:check": "node scripts/build-doc-sources.mjs --check",
+    "build:client": "vite build",
+    "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist-ssr --emptyOutDir",
+    "prerender": "node scripts/prerender.mjs",
+    "serve": "node scripts/serve-static.mjs dist 4173",
+    "check:a11y": "node scripts/check.mjs",
+    "check:motion": "node scripts/check-motion.mjs",
+    "check:docs": "node scripts/build-doc-sources.mjs --check"
   },
   "dependencies": {
     "@mdx-js/rollup": "^3.1.1",

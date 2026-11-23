@@ -40,7 +40,7 @@ export function Nav() {
               <a
                 href={link.to}
                 className={cn(
-                  "font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-muted",
+                  "nav-link font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-muted",
                   "transition-colors duration-[160ms] hover:text-ink",
                   pathname === link.to && "text-ink",
                 )}

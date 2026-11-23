@@ -20,6 +20,7 @@ import { CodePanel } from "@/components/ui/CodePanel";
 import { CompareTable } from "@/components/ui/CompareTable";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { FeatureCard } from "@/components/ui/FeatureCard";
+import { Reveal } from "@/components/ui/Reveal";
 import { Tabs } from "@/components/ui/Tabs";
 import {
   CLOSING,
@@ -59,8 +60,17 @@ export function Home() {
     <>
       {/* --- Hero ---------------------------------------------------------- */}
       <Shell>
-        <div className="grid items-start gap-12 pt-14 pb-10 lg:grid-cols-[1.03fr_0.97fr] lg:gap-[66px] lg:pt-20">
-          <div className="flex flex-col items-start gap-6">
+        <div className="relative grid items-start gap-12 pt-14 pb-10 lg:grid-cols-[1.03fr_0.97fr] lg:gap-[66px] lg:pt-20">
+          {/* Soft orange light behind the hero. Decoration only: it is aria-hidden,
+              it never carries meaning, and it stops under reduced motion. The
+              wrapper clips it: a 520px glow on a 390px screen made the whole page
+              scroll sideways by 46px until it did. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="glow-drift -top-[120px] left-[-90px] h-[520px] w-[520px] rounded-full opacity-70" />
+          </div>
+          {/* The hero rises but never fades: an opacity-0 headline moves the
+              largest-contentful-paint time to the end of its animation. */}
+          <div className="hero-rise relative flex flex-col items-start gap-6">
             <Eyebrow dot>{HERO.eyebrow}</Eyebrow>
             <h1 className="display">
               {HERO.headline.before}
@@ -88,20 +98,29 @@ export function Home() {
             </div>
           </div>
 
-          <TerminalMock lines={HERO_TERMINAL} className="w-full" animate />
+          {/* No entrance animation on the terminal box: a translate on a block
+              this large is counted as a layout shift, and it has its own typing. */}
+          <div className="relative w-full">
+            <TerminalMock lines={HERO_TERMINAL} className="w-full" animate />
+          </div>
         </div>
       </Shell>
 
       {/* --- Proof strip --------------------------------------------------- */}
       <Shell>
         <ul className="grid gap-3 border-y border-line py-6 sm:grid-cols-2 lg:grid-cols-4">
-          {PROOF.map((item) => {
+          {PROOF.map((item, index) => {
             const Icon = PROOF_ICONS[item.icon];
             return (
-              <li key={item.text} className="flex items-start gap-2.5 text-[12.5px] text-muted">
+              <Reveal
+                key={item.text}
+                as="li"
+                index={index}
+                className="flex items-start gap-2.5 text-[12.5px] text-muted"
+              >
                 <Icon size={15} strokeWidth={2} aria-hidden className="mt-[2px] shrink-0 text-orange" />
                 {item.text}
-              </li>
+              </Reveal>
             );
           })}
         </ul>
@@ -109,22 +128,23 @@ export function Home() {
 
       {/* --- Features ------------------------------------------------------ */}
       <Section id="features" labelledBy="features-heading">
-        <div className="flex flex-col gap-4">
+        <Reveal className="flex flex-col gap-4">
           <Eyebrow>What it does</Eyebrow>
           <h2 id="features-heading" className="heading">
             Six things you can watch it <em className="serif-accent">do</em>.
           </h2>
-        </div>
+        </Reveal>
 
         <div className="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, index) => (
-            <FeatureCard
-              key={feature.id}
-              step={feature.id}
-              title={feature.title}
-              body={feature.body}
-              icon={FEATURE_ICONS[index] ?? Workflow}
-            />
+            <Reveal key={feature.id} index={index % 3} className="h-full">
+              <FeatureCard
+                step={feature.id}
+                title={feature.title}
+                body={feature.body}
+                icon={FEATURE_ICONS[index] ?? Workflow}
+              />
+            </Reveal>
           ))}
         </div>
       </Section>
@@ -132,7 +152,7 @@ export function Home() {
       {/* --- Workflows ----------------------------------------------------- */}
       <Section id="workflows" labelledBy="workflows-heading" className="border-t border-line">
         <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:gap-[66px]">
-          <div className="flex min-w-0 flex-col gap-5">
+          <Reveal className="flex min-w-0 flex-col gap-5">
             <Eyebrow>{WORKFLOWS.eyebrow}</Eyebrow>
             <Headline headline={WORKFLOWS.headline} className="heading" />
             <p className="lead">{WORKFLOWS.body}</p>
@@ -145,27 +165,31 @@ export function Home() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
 
-          <WorkflowPanelMock className="self-start" />
+          <Reveal index={1}>
+            <WorkflowPanelMock className="self-start" />
+          </Reveal>
         </div>
       </Section>
 
       {/* --- Comparison ---------------------------------------------------- */}
       <Section labelledBy="compare-heading" className="border-t border-line">
-        <div className="flex flex-col gap-4">
+        <Reveal className="flex flex-col gap-4">
           <Eyebrow>How it compares</Eyebrow>
           <h2 id="compare-heading" className="heading">
             Different in <em className="serif-accent">four</em> ways that matter.
           </h2>
-        </div>
-        <CompareTable rows={COMPARISON.rows} footnote={COMPARISON.footnote} className="mt-10" />
+        </Reveal>
+        <Reveal index={1}>
+          <CompareTable rows={COMPARISON.rows} footnote={COMPARISON.footnote} className="mt-10" />
+        </Reveal>
       </Section>
 
       {/* --- Quickstart ---------------------------------------------------- */}
       <Section labelledBy="quickstart-heading" className="border-t border-line">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-[66px]">
-          <div className="flex min-w-0 flex-col gap-5">
+          <Reveal className="flex min-w-0 flex-col gap-5">
             <Eyebrow>Quickstart</Eyebrow>
             <Headline headline={QUICKSTART.headline} className="heading" />
             <p className="lead">{QUICKSTART.body}</p>
@@ -183,9 +207,9 @@ export function Home() {
                 </li>
               ))}
             </ol>
-          </div>
+          </Reveal>
 
-          <div className="flex min-w-0 flex-col gap-4">
+          <Reveal index={1} className="flex min-w-0 flex-col gap-4">
             <Tabs
               label="How to start"
               tabs={[
@@ -202,20 +226,20 @@ export function Home() {
               ]}
             />
             <Callout tone="honest">{QUICKSTART.keyNote}</Callout>
-          </div>
+          </Reveal>
         </div>
       </Section>
 
       {/* --- FAQ ----------------------------------------------------------- */}
       <Section labelledBy="faq-heading" className="border-t border-line">
-        <div className="flex flex-col gap-4">
+        <Reveal className="flex flex-col gap-4">
           <Eyebrow>Questions</Eyebrow>
           <h2 id="faq-heading" className="heading">
             The things people <em className="serif-accent">ask</em>.
           </h2>
-        </div>
+        </Reveal>
 
-        <div className="mt-10 flex flex-col divide-y divide-line border-y border-line">
+        <Reveal index={1} as="div" className="mt-10 flex flex-col divide-y divide-line border-y border-line">
           {FAQ.map((item) => (
             <details key={item.question} className="group py-4">
               <summary className="flex min-h-11 cursor-pointer items-center gap-3 py-1 text-[14.5px] font-bold text-ink marker:content-none">
@@ -230,12 +254,12 @@ export function Home() {
               <p className="mt-3 max-w-[68ch] pl-6 text-[13.5px] leading-[1.75] text-muted">{item.answer}</p>
             </details>
           ))}
-        </div>
+        </Reveal>
       </Section>
 
       {/* --- Closing CTA --------------------------------------------------- */}
       <Section className="border-t border-line" spacing="tight">
-        <div className="flex flex-col items-center gap-5 py-8 text-center">
+        <Reveal className="flex flex-col items-center gap-5 py-8 text-center">
           <div aria-hidden className="flex gap-1.5">
             <span className="size-1.5 rounded-full bg-orange-pale/90" />
             <span className="size-1.5 rounded-full bg-orange-pale/60" />
@@ -255,7 +279,7 @@ export function Home() {
             </Button>
           </div>
           <p className="font-mono text-[11px] text-muted">{CLOSING.micro}</p>
-        </div>
+        </Reveal>
       </Section>
     </>
   );

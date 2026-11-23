@@ -29,10 +29,10 @@ export interface RevealOptions {
 }
 
 export const DEFAULT_REVEAL: Required<RevealOptions> = {
-  charMs: 18,
-  beforeCommandMs: 320,
-  lineMs: 170,
-  beforePromptMs: 360,
+  charMs: 16,
+  beforeCommandMs: 180,
+  lineMs: 85,
+  beforePromptMs: 200,
 };
 
 /**

@@ -12,6 +12,16 @@
       name="description"
       content="An AI coding agent in your terminal. Real tools, real edits, a 10-minute workflow engine, memory that survives the session. Free to start, MIT licensed."
     />
+    <!--
+      Opt in to scroll reveals only when the reader allows motion, and only if
+      JavaScript is running. Without this class the content is visible at once:
+      a hidden state must never depend on a script that might fail.
+    -->
+    <script>
+      if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("js-motion");
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -76,15 +76,30 @@ browser. A build step that can be checked (`npm run docs:check`) is worth more t
 clever glob. `scripts/check.mjs` now walks all seventeen routes at two widths and fails
 on a dead anchor, a sideways scroll, a layout shift or a serious axe violation.
 
-### P4 — Polish, SEO, prerender
+### P4 — Polish, SEO, prerender — DONE
 
-- OG images (one per page, generated at build), favicon set, `robots.txt`, `sitemap.xml`.
-- JSON-LD `SoftwareApplication` + `BreadcrumbList` on docs pages.
-- **Prerender**: after `vite build`, snapshot each route to real HTML so crawlers and
-  link previews work without JavaScript.
-- Lighthouse CI budget, axe a11y check, broken-link check.
+- **Prerender**: `vite build` + an SSR build of the same `<App />`, then
+  `scripts/prerender.mjs` writes 17 real HTML routes, `404.html`, `sitemap.xml` and
+  `robots.txt`. Per-route title, description, canonical, OG and Twitter tags are in
+  the file, so a crawler or a link preview needs no JavaScript.
+- **Motion**: scroll reveal, a drifting hero glow, nav underline, running-agent
+  pulse, plus the existing shimmer and cursor. All six are cancelled under
+  `prefers-reduced-motion`, and the reveal is opt-in from a one-line script so a
+  no-JS reader never sees a hidden block.
+- **Static-correct local serving**: `scripts/serve-static.mjs` replaces
+  `vite preview`, which was rewriting every path to the root `index.html` and
+  hiding hydration mismatches.
+- **New gates**: `check-motion.mjs` (animations run, reduced motion stops them,
+  no-JS readable) and `check.mjs` extended to all 17 routes × 2 widths with a
+  dead-anchor test.
 
-**Done when** `curl https://…/` shows the real headline in HTML, and every budget passes.
+**Done when** `curl` shows the real headline in HTML without JavaScript. **Met.**
+Verified with `curl` on `/docs/workflows`, a JavaScript-disabled browser context,
+and a real `hydrateRoot` with no recoverable errors.
+
+**Still open from this phase:** per-page OG images (one shared `og.png` is
+referenced today and the file is not written yet), a favicon set beyond the single
+SVG, and `BreadcrumbList` structured data. Those move to P5 with the deploy.
 
 ### P5 — Azure
 

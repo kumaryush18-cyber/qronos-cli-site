@@ -93,22 +93,40 @@ scroll. Cards in a grid always have equal heights.
 
 ## 5. Motion
 
-Two animations. That is the whole budget.
+Motion is the difference between a page that looks printed and a page that looks
+alive. It is also the easiest thing to overdo, so every animation here has one job
+and one home in `src/styles/base.css`.
 
-1. **Shimmer** — a 4-cell band of `--orange-pale` travelling across the wordmark
-   "Qronos" every **3000 ms**, taken from `src/shimmer.ts` (`SHIMMER_PERIOD_MS = 3_000`,
-   `SHIMMER_BAND = 4`). Only ever on: the wordmark, the hero terminal's working line, and
-   the primary button on hover.
-2. **Cursor** — a block cursor blinking at `1s step-end`.
+| # | Animation | Where | Length | Job |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | **Shimmer** | wordmark, hero working line | 3000 ms loop | the brand's own light |
+| 2 | **Cursor** | terminal, code typing | 1 s step-end loop | a cursor that blinks |
+| 3 | **Reveal** | every section, card and list | 620 ms, once | content arrives as you scroll |
+| 4 | **Drift** | one soft orange glow behind the hero | 26 s, alternating | the room is lit, not painted |
+| 5 | **Pulse** | a running agent's dot | 1.8 s loop | this row is still working |
+| 6 | **Underline** | nav links | 160 ms | the link is the thing you are on |
 
-Plus, only on the terminal mock: typed characters appear at ~18 ms per character, tool rows
-and output appear as whole blocks (never letter-by-letter — that is what a real terminal
-does).
+Rules that make the set safe:
+
+- **Reveal is opt-in.** A one-line script in `<head>` adds `.js-motion` only when
+  JavaScript runs *and* the reader allows motion. Without it the content is simply
+  visible: a hidden state must never depend on a script that might fail. The
+  prerendered HTML is readable with JavaScript switched off.
+- **Reveal writes a data attribute, not an inline style.** `data-i="3"` sets the
+  stagger from CSS. A custom property in `style` serialises as `--reveal-i:0` on
+  the server and `--reveal-i: 0;` in the browser, and that difference alone made
+  React throw away the prerendered tree once.
+- **Nothing carries meaning.** The green tick, the red cross and the amber stop are
+  words and glyphs, not motion. Remove every animation and the page still says the
+  same thing.
+- **Reduced motion stops all six.** `prefers-reduced-motion: reduce` cancels the
+  shimmer, cursor, drift and pulse, and reveals everything at once. The media block
+  sits at the *end* of the stylesheet, because a rule declared before the animation
+  it cancels loses.
+- **The glow is clipped.** It is 520 px wide behind a 390 px screen; its wrapper
+  has `overflow: hidden`, without which the whole page scrolled sideways by 46 px.
 
 Easings: `cubic-bezier(0.22, 1, 0.36, 1)` (out), 160 ms for hover, 240 ms for panels.
-
-`@media (prefers-reduced-motion: reduce)` turns the shimmer, the cursor and the typing into
-static end states. The content is identical either way — motion never carries meaning.
 
 ---
 
