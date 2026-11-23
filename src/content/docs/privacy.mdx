@@ -1,0 +1,58 @@
+Short version: your code stays on your machine. The only bytes that leave are the
+prompts you asked for.
+
+## What is stored, and where
+
+```
+~/.qronos/
+  connections.json        provider names, endpoints, model choices, mode 0600
+  agent/sessions/         one .jsonl per session
+  memory/<project>/       journal and document for one project path
+  workflow-runs/          one .jsonl journal per workflow run
+```
+
+All of it is plain text you can read, copy or delete. There is no hidden database.
+
+## What is sent to a model
+
+- the conversation, as you would expect;
+- file contents Qronos reads, cut to the parts it needs;
+- the memory hint block, which is short and redacted;
+- the tool calls it is about to make.
+
+Nothing else. No telemetry of file paths, no repository fingerprint, no usage profile.
+
+## What is redacted before storage
+
+Anything that looks like a credential: `sk-…`, `ghp_…`, bearer tokens, long base64
+strings next to words like `key`, `token`, `password` or `secret`. Redaction runs
+before any size cut, so a cut cannot leave half a secret behind.
+
+## Keys
+
+- Read from the environment at start, or from `~/.qronos/connections.json` with mode
+  `0600` if you explicitly saved one.
+- Never printed in the chat, the log, an error message or an exported transcript.
+- Never sent to a provider other than the one you selected.
+
+## Ads on the free tier
+
+The hosted gateway is sponsored. On the free tier a small ad line appears in the CLI,
+served by the project's own ad service, and an impression is counted when it is drawn.
+Ads are not fetched alongside your prompt and are not tied to your code.
+
+## Deleting everything
+
+```bash
+rm -rf ~/.qronos
+```
+
+That removes sessions, memory, journals and saved provider settings. Your project
+files are untouched. `.qronos/workflows/` inside a repository is not removed — delete
+it on purpose if you saved scripts you do not want.
+
+## What this page cannot promise
+
+Qronos does not control the provider you chose. Each provider has its own retention
+policy for prompts. If that matters for your work, read theirs, or run a model on your
+own machine through an OpenAI-compatible server.

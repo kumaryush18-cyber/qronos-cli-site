@@ -49,3 +49,30 @@ Getting to 95 on mobile means shipping less JavaScript, and the only way to do
 that meaningfully is to stop hydrating static sections — a real architecture
 change, not a tweak. That decision belongs in P4, with the numbers above on the
 table.
+
+## Docs bundle (P3)
+
+Adding thirteen MDX pages raised the single bundle from 97 kB to 131 kB gzip, so
+the docs routes were split out with `React.lazy`:
+
+| Chunk | Size (gzip) | Loaded when |
+| :--- | :--- | :--- |
+| `index` (home, nav, footer) | **96 kB** | every visit |
+| `DocsSidebar` (all MDX bodies + search index) | 33 kB | a docs page only |
+| `DocPage` | 2.4 kB | a docs page only |
+| `Changelog` | 1.8 kB | changelog only |
+
+So the landing page pays nothing for the documentation.
+
+## The gate
+
+`node scripts/check.mjs` walks **17 routes at two widths** (390 px and 1440 px) and
+fails on:
+
+- a serious or critical axe violation (WCAG 2.1 A/AA + best practice);
+- a layout shift above 0.05;
+- any sideways scroll;
+- any in-page link pointing at an id the page does not have.
+
+Current result: **a11y clean, layout shift under 0.05, no sideways scroll**, 17
+routes × 2 widths. Tests: **137 in 16 files**.

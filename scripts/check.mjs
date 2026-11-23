@@ -11,7 +11,22 @@ import { readFile } from "node:fs/promises";
 import { chromium } from "playwright";
 
 const BASE = process.argv[2] ?? "http://127.0.0.1:4173";
-const ROUTES = ["/", "/docs", "/docs/workflows", "/changelog"];
+const DOC_SLUGS = [
+  "getting-started",
+  "install",
+  "commands",
+  "workflows",
+  "memory",
+  "compaction",
+  "hashline-lsp",
+  "agent-hub",
+  "step-names",
+  "retry-stop-rerun",
+  "environment",
+  "troubleshooting",
+  "privacy",
+];
+const ROUTES = ["/", "/docs", "/changelog", ...DOC_SLUGS.map((slug) => `/docs/${slug}`)];
 const WIDTHS = [390, 1440];
 
 const axeSource = await readFile(new URL("../node_modules/axe-core/axe.min.js", import.meta.url), "utf8");
@@ -40,6 +55,15 @@ try {
         return shifts.reduce((sum, entry) => sum + (entry.hadRecentInput ? 0 : entry.value), 0);
       });
       if (cls > 0.05) problems.push(`${width}px ${route}: layout shift ${cls.toFixed(3)}`);
+
+      // Every in-page link must land on a real id. A table of contents that
+      // points at a heading rehype-slug did not create is a dead link.
+      const deadAnchors = await page.evaluate(() =>
+        [...document.querySelectorAll('a[href^="#"]')]
+          .map((anchor) => anchor.getAttribute("href").slice(1))
+          .filter((id) => id.length > 0 && document.getElementById(id) === null),
+      );
+      for (const id of new Set(deadAnchors)) problems.push(`${width}px ${route}: dead anchor #${id}`);
 
       await page.addScriptTag({ content: axeSource });
       const result = await page.evaluate(async () => {

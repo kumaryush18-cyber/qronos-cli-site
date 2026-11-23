@@ -27,7 +27,12 @@ export function CodePanel({ code, label = "shell", className }: CodePanelProps) 
         <CopyButton text={text} label="Copy" className="ml-auto border-transparent px-2 py-1" />
       </div>
 
-      <pre className="overflow-x-auto px-4 py-3.5 font-mono text-[12px] leading-[1.9] text-ink" tabIndex={0}>
+      {/* On a phone a long command should wrap instead of being cut at the edge.
+          From `sm` up the panel scrolls sideways, which keeps columns aligned. */}
+      <pre
+        className="overflow-x-auto px-4 py-3.5 font-mono text-[12px] leading-[1.9] text-ink whitespace-pre-wrap break-words sm:whitespace-pre sm:break-normal"
+        tabIndex={0}
+      >
         <code>
           {lines.map((line, index) => (
             <span key={index} className="block">

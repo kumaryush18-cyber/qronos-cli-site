@@ -1,0 +1,60 @@
+Every shell call carries an optional short sentence, written by the model, and the
+transcript prints it above the command.
+
+```
+● List files in current directory · 1s
+  ⎿ $ ls -la
+```
+
+The sentence is a real field on the tool call (`description`), not something
+generated from the command afterwards. That matters: a summary written after the
+fact can only repeat the command, while a sentence written before it can say *why*.
+
+## What the model is asked for
+
+The field's own description teaches the rules, so nothing extra is spent:
+
+- active voice, five to ten words;
+- say what the step achieves, not how;
+- never "run the command" or "complex" or "risky";
+- no file paths, no secrets, no second line.
+
+Real examples from a neutral prompt: **"List files in current directory"** and
+**"Show current Git repository status"**. The model filled the field on both calls
+without being told to.
+
+## When there is no sentence
+
+The line falls back to the old form and nothing breaks:
+
+```
+● Bash(ls -la)
+```
+
+A resumed session, an old transcript, or a workflow agent can all arrive without a
+description. That is not an error, and it is never filled with an invented sentence.
+
+## Cleaning
+
+The model's words are cut, never trusted:
+
+- colours, control characters and second lines are stripped;
+- the title is cut at 90 characters, the command at 120;
+- a description that only repeats the command is dropped, because saying it twice is
+  noise.
+
+## Turning it off
+
+```bash
+QRONOS_TOOL_DESCRIPTIONS=0 qronos
+```
+
+That one flag removes the field from the tool schema **and** the line from the
+display, so nothing is asked for and nothing is spent. Schema and renderer read the
+same setting; they cannot disagree.
+
+## What did not change
+
+The tool is still called `bash` (and `powershell` on Windows). Approvals, plan mode,
+workflow tool doors and the read-only fact check all work exactly as before. A step
+name is a label, not a permission.

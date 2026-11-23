@@ -1,0 +1,71 @@
+Two kinds of command: flags you type before Qronos starts, and slash commands you
+type inside the session.
+
+## Flags
+
+```bash
+qronos --provider openai --model gpt-4.1
+qronos --base-url http://localhost:11434/v1 --model llama3
+qronos --help
+qronos --version
+```
+
+| Flag | Meaning |
+| :--- | :--- |
+| `--provider <name>` | pick a saved provider |
+| `--model <id>` | override the model for this session |
+| `--base-url <url>` | any OpenAI-compatible endpoint |
+| `--version` | print the version and exit |
+| `--help` | print every flag and exit |
+
+## Slash commands
+
+Type `/` in the prompt to see this list, filtered as you type.
+
+| Command | What it does |
+| :--- | :--- |
+| `/help` | keys, commands, and the current mode |
+| `/init` | write a project file describing this repository |
+| `/mode` | change how tool calls are approved |
+| `/config` | choose provider and model |
+| `/clear` | clear the screen, not the session |
+| `/memory` | show what is remembered; `/memory sync` rewrites the document |
+| `/compact` | summarise the session now, keeping the facts |
+| `/workflows` | list runs, open the panel, stop, pause, save, retry |
+| `/export` | write the session as `.html` or `.jsonl` |
+| `/import` | load a `.jsonl` transcript back into the chat |
+| `/buy-credits` | top up when the free allowance is used |
+| `/quit` | leave (the item is labelled **Quit**) |
+
+## Keys
+
+| Key | Action |
+| :--- | :--- |
+| `enter` | send |
+| `esc` | interrupt the current turn |
+| `ctrl+d` | exit |
+| `alt+w` | open the workflow panel |
+| `ctrl+c` | not bound — it would kill a stream you paid for |
+
+## `/workflows` in full
+
+```
+/workflows                  list runs
+/workflows <id>             one run in detail
+/workflows stop [<id>|all]  stop a run, or all of them
+/workflows stop <id> <agent> stop one agent
+/workflows pause <id>       finish in-flight work, then wait
+/workflows resume <id>      carry on from the journal
+/workflows saved            list saved scripts
+/workflows panel            open the live panel
+/workflows save [<id>]      save a run's script into the project
+/workflows restart [<id>] [<agent>]
+/workflows scripts          list scripts on disk
+/workflows run <name>       run a saved script
+/workflows edit <name>      open it in your editor
+/workflows rerun <id> <phase>
+/workflows retry <id>       retry only the failed agents
+```
+
+Every one of these is also a key in the panel. The panel only reads: closing it
+never loses a run.

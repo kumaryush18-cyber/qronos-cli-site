@@ -58,11 +58,23 @@ self-hosted fonts, matched fallback metrics (CLS 0) and a typed hero are shipped
   for sidebar, prev/next and sitemap.
 - Docs layout: 180px sticky sidebar, 735px column, on-this-page TOC, `cmd+K` search
   backed by a build-time `search-index.json`.
-- Content: the eight `qronos-cli/docs/*.md` files plus Commands, Environment, Install,
-  Troubleshooting, Privacy.
+- Content: all thirteen pages written (Getting started, Install, Commands, Workflows,
+  Memory, Compaction, Hashline & LSP, Agent Hub, Step names, Retry/stop/rerun,
+  Environment, Troubleshooting, Privacy) — checked against the CLI code, not invented.
 
-**Done when** all twelve pages exist, search finds every heading, and the sync check
-passes against `qronos-cli/docs`.
+**Done when** all thirteen pages exist, search finds every heading, and every
+table-of-contents anchor resolves.
+
+Shipped: thirteen MDX pages, a generated `doc-sources.ts` (headings and search come from
+the same strings the page renders), `cmd+K` search over the real headings, per-page TOC
+with an intersection-observer active marker, and lazy docs routes so the landing page
+stays at **96 kB gzip** while the docs chunk is **33 kB** and loads only there.
+
+Why a generated module and not `import.meta.glob("?raw")`: the test runner did not
+honour the `?raw` query, so the index was silently empty in tests while working in the
+browser. A build step that can be checked (`npm run docs:check`) is worth more than a
+clever glob. `scripts/check.mjs` now walks all seventeen routes at two widths and fails
+on a dead anchor, a sideways scroll, a layout shift or a serious axe violation.
 
 ### P4 — Polish, SEO, prerender
 

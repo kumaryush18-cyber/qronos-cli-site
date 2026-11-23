@@ -1,13 +1,25 @@
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Route, Switch, useLocation } from "wouter";
 import { Footer } from "./components/layout/Footer";
 import { Nav } from "./components/layout/Nav";
 import { Seo } from "./components/ui/Seo";
-import { Changelog } from "./pages/Changelog";
-import { DocPage } from "./pages/DocPage";
-import { Docs } from "./pages/Docs";
 import { Home } from "./pages/Home";
 import { NotFound } from "./pages/NotFound";
+
+// The docs pages carry every MDX body and the search index. Loading them lazily
+// keeps the landing page's first load to the home bundle alone.
+const Docs = lazy(() => import("./pages/Docs").then((module) => ({ default: module.Docs })));
+const DocPage = lazy(() => import("./pages/DocPage").then((module) => ({ default: module.DocPage })));
+const Changelog = lazy(() => import("./pages/Changelog").then((module) => ({ default: module.Changelog })));
+
+/** Shown only while a lazy route's chunk arrives; sized to avoid a layout shift. */
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[62vh] items-center justify-center" aria-busy="true" aria-live="polite">
+      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Loading…</p>
+    </div>
+  );
+}
 
 /**
  * Scroll handling for a single-page site.
@@ -49,13 +61,15 @@ function Site() {
       <Nav />
 
       <main id="main" className="flex-1">
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/docs" component={Docs} />
-          <Route path="/docs/:slug">{(params: { slug: string }) => <DocPage slug={params.slug} />}</Route>
-          <Route path="/changelog" component={Changelog} />
-          <Route component={NotFound} />
-        </Switch>
+        <Suspense fallback={<RouteFallback />}>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/docs" component={Docs} />
+            <Route path="/docs/:slug">{(params: { slug: string }) => <DocPage slug={params.slug} />}</Route>
+            <Route path="/changelog" component={Changelog} />
+            <Route component={NotFound} />
+          </Switch>
+        </Suspense>
       </main>
 
       <Footer />

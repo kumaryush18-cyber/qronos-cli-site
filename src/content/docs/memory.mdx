@@ -1,0 +1,72 @@
+Memory is what Qronos knows about your project at the start of the next session.
+It is local, small, and under your control.
+
+## Two layers
+
+1. **A project document.** A file at the root of the repository that you write and
+   read like a README. Qronos reads it first.
+2. **A learned journal.** Notes Qronos writes after useful work: a command that
+   fixed the tests, a convention you corrected, a path that is not where it looks.
+
+The document is for rules. The journal is for facts discovered along the way.
+
+## What gets written
+
+After a turn that changed something, a short note may be appended:
+
+```json
+{
+  "at": "2026-11-23T10:41:00Z",
+  "kind": "lesson",
+  "text": "tests fail unless DATABASE_URL is set; use `.env.test`",
+  "files": ["vitest.config.ts"]
+}
+```
+
+Then a consolidation step folds the journal into a small document with a hard size
+cap. Notes that have not helped are dropped rather than kept forever.
+
+## What is injected
+
+At the start of a turn, Qronos injects a few capped hints — not the whole journal.
+The prompt stays small, so you do not pay for old notes on every call.
+
+## Secrets are redacted
+
+Before a note is written, anything that looks like a key, token or password is
+replaced with a placeholder. The redaction runs before the text is cut, so a cut
+can never leave half a secret behind.
+
+## Commands
+
+| Command | What it does |
+| :--- | :--- |
+| `/memory` | show the project document and the recent notes |
+| `/memory sync` | rewrite the document from the journal now |
+| `/memory forget <id>` | remove one note |
+
+## Where it lives
+
+```
+~/.qronos/memory/<project-hash>/journal.jsonl
+~/.qronos/memory/<project-hash>/document.md
+```
+
+One folder per project path. Two checkouts of the same repo do not share notes,
+because a note about `~/work/api` is often wrong in `~/scratch/api`.
+
+## Turn it off
+
+```bash
+QRONOS_MEMORY=0 qronos
+```
+
+Memory is on by default because it makes the second session much better. It is also
+the feature most likely to surprise you, so the switch is a plain environment
+variable and nothing else depends on it.
+
+## What memory is not
+
+- It is not a vector database and does not embed your repository.
+- It is not sent anywhere except as the small hint block at the top of a prompt.
+- It is not a backup. Sessions and journals are JSONL files; copy them if they matter.

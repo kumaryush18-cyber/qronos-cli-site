@@ -1,0 +1,65 @@
+The hub is where subagents become visible: who is working, on what, with which
+model, and what it has cost so far.
+
+## The roster
+
+A floating panel, centred, never in the footer. Each row is one agent:
+
+```
+✓ check-auth        sonnet-5.5   4.2k   1m 02s
+✗ check-uploads     sonnet-5.5   3.1k   0m 48s
+⊘ check-logging     sonnet-5.5   2.6k   0m 39s
+↺ check-secrets     sonnet-5.5   0      0m 00s
+```
+
+- the glyph says the state, and the word beside it says it again;
+- the model column is the model that agent actually used;
+- `↺` means replayed from the journal — already paid for, so the tokens are zero.
+
+## Typed results
+
+An agent can be asked for a shape:
+
+```js
+const audit = await agent("List the risks with a severity", {
+  schema: {
+    type: "object",
+    properties: {
+      risks: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: { title: { type: "string" }, severity: { enum: ["low", "high"] } },
+          required: ["title", "severity"],
+        },
+      },
+    },
+    required: ["risks"],
+  },
+});
+```
+
+You get `audit.data` when the answer matches, and `audit.ok === false` with an error
+when it does not. The schema travels with the record, so a retried agent is checked
+against the same shape — a green tick can never be given to words nobody validated.
+
+## Chat with one agent
+
+Open an agent to read its full transcript. You can send it one more instruction
+without starting a new run. The other agents keep working while you do.
+
+## Retry, one agent at a time
+
+A failed agent is a row, not a dead run. Retrying runs that one agent, with the
+schema, the model and the label it had before. The tokens rise because it is new
+work; the good answers are untouched.
+
+## The rules the hub keeps
+
+| Rule | Why |
+| :--- | :--- |
+| a stopped agent is amber | you decided it; a failure is red |
+| a replayed agent is blue and free | it did not call the model |
+| queued agents are not in the detail list | they have nothing to show yet |
+| the panel only reads | closing it never loses a run |
+| every panel key is also a command | a headless session can do the same thing |

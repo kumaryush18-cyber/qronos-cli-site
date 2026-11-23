@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { DocSearch } from "./DocSearch";
 import { groupedDocs, type DocPage } from "@/content/docs/manifest";
 import { cn } from "@/lib/cn";
 
@@ -12,6 +13,7 @@ export function DocsSidebar({ className }: DocsSidebarProps) {
 
   return (
     <nav aria-label="Documentation" className={cn("flex flex-col gap-6", className)}>
+      <DocSearch />
       {groupedDocs().map(({ group, pages }) => (
         <div key={group} className="flex flex-col gap-2">
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-muted">{group}</p>

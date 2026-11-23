@@ -1,0 +1,56 @@
+Three keys fix a run that went wrong, without starting over. They exist because a
+workflow can cost real money, and "run it again" is the most expensive answer.
+
+## `f` — retry what failed
+
+Runs only the agents with a dark red cross. Every good answer stays where it is.
+
+- asks first: how many failed, their names, and what the first attempt spent;
+- one at a time, so the bill stays readable;
+- new work, not a replay: tokens rise and the rows say they ran again;
+- the schema travels with the record, so a retried agent cannot pass a shape it
+  failed the first time.
+
+A **stopped** agent is not retried. You stopped it on purpose. If the only
+unfinished agents are the ones you stopped, the answer says exactly that instead of
+a flat "nothing failed".
+
+## `a` — rerun a phase
+
+Runs every agent of one phase, in order. Use it when the code changed and every
+answer in that phase is out of date.
+
+- asks first, with the phase, the agent count and the earlier spend;
+- new work, so the tokens rise;
+- one agent that cannot run does not stop the rest, and the notice says which one
+  did not run and why.
+
+## `k` and `x` — two sizes of stop
+
+| Key | Scope |
+| :--- | :--- |
+| `k` | the one agent you are looking at |
+| `x` | the whole run |
+
+A stop saves the rest of a call, never the call. What the agent already spent stays
+on the bill, and it is labelled **stopped by you** in amber — never `failed`.
+
+Stopping the wrong agent spends money on the wrong work, so the command refuses a
+word that matches two agents and lists them. `/workflows stop <id> <agent>` accepts
+an id (`#3`, or `3`) or part of a label.
+
+## `r` — replay
+
+Replays an agent from the journal. It makes no model call, so it costs nothing, and
+it is drawn with a blue `↺` rather than a green tick. A report must never pass old
+work off as new.
+
+A **restart** is the opposite of a replay: new work, so the row says `Done ·
+restarted` and the tokens rise. A restart asks first, with an editable task, because
+usually it was the words that failed, not the model.
+
+## The one rule behind all of it
+
+Every path that runs an agent applies the same schema, the same model routing and the
+same permission door. A retry, a rerun and a restart are not special cases with their
+own code — that is how a green tick ended up on unvalidated words once already.

@@ -1,0 +1,56 @@
+Two safety nets that work without you installing anything.
+
+## Hashline
+
+When Qronos reads a file, every line gets a short tag:
+
+```
+12ab|function total(items) {
+7c3d|  return items.reduce((sum, item) => sum + item.price, 0);
+91fe|}
+```
+
+An edit then names the tags instead of a line number:
+
+```
+replace 7c3d with:   return items.reduce((sum, item) => sum + item.price, 0) / 100;
+```
+
+Why: line numbers go stale the moment anything else edits the file. A tag does not.
+If the tag is gone, the edit is refused instead of landing in the wrong place — the
+difference between a rejected edit and a deleted function.
+
+Tags are per read. Reading the file again refreshes them.
+
+## Language server, bundled
+
+Write a file and the language server checks it in the same turn:
+
+```
+● Check types after edit · 1s
+  ⎿ src/total.ts:7:12 error TS2322: Type 'string' is not assignable to type 'number'
+```
+
+The TypeScript server ships **inside** the package. You do not install `tsserver`,
+you do not run `npm i -D typescript` for the checker, and the check works in a fresh
+container with no network.
+
+For other languages Qronos uses a language server if one is already on your machine
+(`pyright`, `gopls`, `rust-analyzer`). If none is present, the check is skipped and
+says so — it never pretends to have type-checked a file it did not.
+
+## Diagnostics go to the model, not just to you
+
+A type error after an edit is fed back once, so the next step can fix it. One retry,
+then the error is reported and the turn continues. A loop of "try, fail, try" is how
+a cheap mistake becomes an expensive one.
+
+## Turning it off
+
+| Variable | Default | Effect |
+| :--- | :--- | :--- |
+| `QRONOS_HASHLINE` | on | `0` sends plain line numbers |
+| `QRONOS_LSP` | on | `0` skips the check after a write |
+
+Turn it off for a huge generated file where tags are noise, or when a language
+server already runs in your editor and the two would fight over the same cache.

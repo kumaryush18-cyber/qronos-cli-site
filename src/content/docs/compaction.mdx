@@ -1,0 +1,55 @@
+A long session fills the context window. Compaction replaces the oldest part with a
+summary that keeps the facts which matter: what changed, what failed, what you
+decided.
+
+## What you see
+
+A note in the chat, never a silent edit:
+
+```
+Compacted 62 messages into 9 · kept 4 files, 2 decisions
+```
+
+The note is drawn for you. It is not sent to the model, so it costs nothing.
+
+## When it runs
+
+- Automatically, when the session is close to the model's context limit.
+- On demand, with `/compact`.
+
+On by default. Turn it off with `QRONOS_COMPACT=0`.
+
+## How long it lasts
+
+A checkpoint is re-sent with **every** later prompt in the session, so the summary
+keeps working rather than lasting one turn. It has a hard size cap and is redacted
+like everything else.
+
+## If in doubt, it gives up
+
+This is the rule that matters most: when the summariser is uncertain, it returns an
+empty object and compaction is skipped. The session continues with the full history
+instead.
+
+A broken summary is much worse than a long context: it can quietly delete the one
+fact that mattered. So the code is written to prefer "no compaction" over "maybe
+wrong compaction".
+
+## What is kept
+
+| Kept | Dropped |
+| :--- | :--- |
+| file paths that were read or edited | greetings and restated questions |
+| decisions you made ("use Postgres, not SQLite") | long command output already summarised |
+| failures and their cause | tool calls that succeeded on the first try |
+| open questions and next steps | duplicated text |
+
+## Reading a checkpoint
+
+Checkpoints are saved with the session, so `/export` includes them. A `.jsonl`
+transcript can be re-imported with `/import` and the checkpoint comes back with it.
+
+## Limits
+
+Compaction summarises text; it does not re-read your files. If a fact lives only in
+a file that was never opened, no summary can invent it. Ask again when you need it.

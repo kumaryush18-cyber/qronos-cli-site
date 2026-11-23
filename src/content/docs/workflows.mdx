@@ -1,0 +1,145 @@
+A workflow is a small JavaScript script that the model writes for you. It calls
+subagents, waits for them, and returns one answer. Your chat stays readable even
+when thirty agents did the work.
+
+## How a run starts
+
+Type the word **ultracode** as its own word in a prompt:
+
+```
+ultracode: audit this repo for unused exports and say which are safe to delete
+```
+
+`ultrathink` and `orchestrate` are different: those ask for more reasoning, not for
+a workflow. The match is strict — lowercase, standalone, never inside a code fence
+or a path.
+
+The chat then asks for a script instead of an essay. You see the script, and you
+approve it before anything runs.
+
+## The script API
+
+```js
+export const meta = {
+  name: "unused-exports",
+  description: "find exports nothing imports",
+  phases: ["Scout", "Audit", "Report"],
+};
+
+phase("Scout");
+const files = await agent("List the exported symbols in src/**/*.ts", { label: "exports" });
+
+phase("Audit");
+const checks = await parallel(
+  files.data.symbols.map((name) => () =>
+    agent(`Does anything import ${name}? Answer in one sentence.`, { agent: "explorer" })
+  )
+);
+
+phase("Report");
+const report = await agent("Write the report from these answers: " + JSON.stringify(checks));
+return report.text;
+```
+
+| Call | What it returns |
+| :--- | :--- |
+| `agent(prompt, { label, schema, agent, model, phase })` | `{ ok, text, data, error, usage, replayed?, stopped? }` |
+| `parallel([() => agent(...), ...])` | an array of those results, in order |
+| `pipeline(list, fn)` | each item through `fn`, one at a time |
+| `phase("Name")` | sets the phase for later agents |
+| `log("message")` | a line in the run log |
+| `workflow(scriptString)` | a child workflow, one level deep, shared budget |
+
+`args` and `budget` are read-only. `Math.random` is seeded and the clock is frozen,
+so a replayed run takes the same path.
+
+## What the script cannot do
+
+The script may not import, require, read files, run a shell, touch the network or
+`process`, or start timers. Those words are refused before the script runs. Only
+its **subagents** have tools, and they pass the same permission door you do.
+
+A `vm` is a guardrail against accidents, not a security boundary. Read a script
+before you approve it, exactly as you would read a shell command.
+
+## Caps, and they are reported
+
+| Cap | Default | Range |
+| :--- | :--- | :--- |
+| wall clock | 10 minutes | 1 min – 60 min |
+| agents | 1 000 | 1 – 2 000 |
+| running at once | 16 | 1 – 32 |
+| log lines | 500 | — |
+| result size | 200 000 chars | — |
+| nesting | 2 levels | 1 – 3 |
+
+When a cap is hit, the result says so. Nothing is truncated in silence.
+
+## Watching a run
+
+`alt+w`, or `/workflows panel`:
+
+```
+Scout   ✓3        6.1k
+Audit   ✓1 ↺1 ✗1 ⊘1  11.8k
+Report  ·1        3.2k
+```
+
+- `✓` bright green: finished.
+- `✗` dark red: failed, with the reason.
+- `⊘` amber: **you** stopped it, so it is not a failure.
+- `↺` blue: replayed from the journal, and it cost nothing.
+
+Tokens are shown per agent and per phase. `tokens` is fresh spend; `replayedTokens`
+is work you already paid for.
+
+## Steering a run that is already going
+
+| Key | Effect |
+| :--- | :--- |
+| `p` | pause: in-flight agents finish, nothing new starts |
+| `r` | replay from the journal |
+| `x` | stop the whole run |
+| `k` | stop one agent, leave the rest alone |
+| `s` | save the script into `.qronos/workflows/` |
+| `a` | rerun one phase |
+| `f` | retry only the failed agents |
+
+Pause exists because killing an agent throws away tokens you already paid for.
+Replay exists because re-reading a journal costs nothing.
+
+## Failure is a row, not a dead run
+
+If one agent fails, its result is `{ ok: false, error }` and the run carries on.
+`/workflows retry <id>` runs only the red crosses. A retried agent is new work, so
+its tokens rise and its row says it ran again — a report can never pass yesterday's
+answer off as today's.
+
+## Saving and reusing
+
+```
+/workflows save wf_9k2      # writes .qronos/workflows/unused-exports.js
+/workflows scripts          # list what is saved
+/workflows run unused-exports
+/workflows edit unused-exports
+```
+
+A saved script is never overwritten. A name collision becomes `-2`, `-3`, and so on.
+Names are forgiving in exactly one way: `review`, `review.js` and `Review` are the
+same script.
+
+## Environment
+
+| Variable | Default | Clamp |
+| :--- | :--- | :--- |
+| `QRONOS_WORKFLOW_WALL_CLOCK_MS` | 600000 | 60 000 – 3 600 000 |
+| `QRONOS_WORKFLOW_MAX_AGENTS` | 1000 | 1 – 2000 |
+| `QRONOS_WORKFLOW_CONCURRENCY` | 16 | 1 – 32 |
+| `QRONOS_WORKFLOW_MAX_LOGS` | 500 | — |
+| `QRONOS_WORKFLOW_MAX_RESULT_CHARS` | 200000 | — |
+| `QRONOS_WORKFLOW_MAX_DEPTH` | 2 | 1 – 3 |
+| `QRONOS_WORKFLOW_APPROVE` | `ask` | `ask`, `always`, `0` |
+| `QRONOS_WORKFLOW_TOOLS` | on | `0` turns subagent tools off |
+
+On a free shared limit, set `QRONOS_WORKFLOW_CONCURRENCY=2`. Sixteen agents against a
+limit of eight requests a minute mostly buys rate-limit errors.

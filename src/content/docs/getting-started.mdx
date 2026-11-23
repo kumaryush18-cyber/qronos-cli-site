@@ -1,0 +1,74 @@
+Qronos CLI is an AI coding agent that runs in your terminal. It reads your files,
+runs your shell, edits in place, and can fan a big job out to subagents.
+
+## You need
+
+- **Node 22.19 or newer.** Check with `node --version`.
+- A terminal: bash, zsh, PowerShell or Windows Terminal.
+- Either a Qronos account (free to start) or a key for a provider you already use.
+
+## Run it
+
+```bash
+npx qronos-cli
+```
+
+The first run asks one question: **sign in**, or **use my own API key**. Signing in
+sponsors your usage, so you do not need a card to try it.
+
+Prefer the shorter command? Install it once:
+
+```bash
+npm install -g qronos-cli
+qronos
+```
+
+## Your first real task
+
+Ask for something you can check in ten seconds:
+
+```
+explain this repo, then fix the failing test
+```
+
+Qronos reads before it writes. You will see a step line with a short sentence, then
+the command it ran, then the result:
+
+```
+● Find the failing test · 1s
+  ⎿ $ npm test -- --run
+    3 failed
+```
+
+## Approve or refuse
+
+Every tool call passes one door. Press **enter** to allow it once, or answer **no**.
+If you want fewer questions, change the mode in the session with `/mode`, or pick a
+looser default in `/config`.
+
+| Mode | What it allows |
+| :--- | :--- |
+| `manual` | asks before every write or shell call |
+| `auto` | asks only when a call looks risky |
+| `edit-automatically` | edits files without asking, still asks for shell |
+| `plan` | reads and plans, never writes |
+| `skip-all` | runs everything you asked for, including shell |
+
+`skip-all` is the one to use inside a container, never on a laptop with your own keys.
+
+## Where things live
+
+```
+~/.qronos/
+  connections.json      provider settings, mode 0600
+  agent/sessions/       your conversation history, one .jsonl per session
+  workflow-runs/        workflow journals
+```
+
+Your project can also hold `.qronos/workflows/` for saved workflow scripts.
+
+## Next
+
+- [Install](/docs/install) — the three ways to install, and pinning a version.
+- [Commands](/docs/commands) — what every slash command does.
+- [Workflows](/docs/workflows) — the one feature that is not a chat.

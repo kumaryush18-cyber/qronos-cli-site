@@ -1,0 +1,62 @@
+Every setting is one environment variable with a default that works. Nothing here is
+required.
+
+## Session behaviour
+
+| Variable | Default | Effect |
+| :--- | :--- | :--- |
+| `QRONOS_MEMORY` | on | `0` turns memory off completely |
+| `QRONOS_COMPACT` | on | `0` turns automatic compaction off |
+| `QRONOS_TOOL_DESCRIPTIONS` | on | `0` removes the step-name field and its line |
+| `QRONOS_ULTRATHINK` | on | `0` stops the `ultrathink` keyword from changing reasoning |
+| `QRONOS_HASHLINE` | on | `0` sends plain line numbers to the model |
+| `QRONOS_LSP` | on | `0` skips the check after a write |
+
+## Workflows
+
+| Variable | Default | Clamp |
+| :--- | :--- | :--- |
+| `QRONOS_WORKFLOW_WALL_CLOCK_MS` | `600000` | 60 000 – 3 600 000 |
+| `QRONOS_WORKFLOW_MAX_AGENTS` | `1000` | 1 – 2000 |
+| `QRONOS_WORKFLOW_CONCURRENCY` | `16` | 1 – 32 |
+| `QRONOS_WORKFLOW_MAX_LOGS` | `500` | — |
+| `QRONOS_WORKFLOW_MAX_RESULT_CHARS` | `200000` | — |
+| `QRONOS_WORKFLOW_MAX_DEPTH` | `2` | 1 – 3 |
+| `QRONOS_WORKFLOW_APPROVE` | `ask` | `ask`, `always`, `0` |
+| `QRONOS_WORKFLOW_TOOLS` | on | `0` gives subagents no tools |
+
+A clamp is applied, not an error: a value outside the range is pulled to the nearest
+end and the run reports what it used.
+
+## Debugging
+
+| Variable | Default | Effect |
+| :--- | :--- | :--- |
+| `QRONOS_DEBUG_WORKFLOW` | off | `1` writes the workflow event stream to stderr |
+| `QRONOS_E2E_MODEL` | — | the model the end-to-end scripts use |
+
+## Providers
+
+| Variable | Meaning |
+| :--- | :--- |
+| `OPENAI_API_KEY` | read when a provider points at OpenAI |
+| `ANTHROPIC_API_KEY` | read when a provider points at Anthropic |
+| `<PROVIDER>_API_KEY` | any other name you chose when saving a provider |
+
+Keys are read from the environment at start. They are not written to disk unless you
+explicitly ask for that, and they are never printed.
+
+## Choosing values per project
+
+A shell wrapper is enough:
+
+```bash
+# cheap mode: small model, two agents at once, no memory
+export QRONOS_WORKFLOW_CONCURRENCY=2
+export QRONOS_MEMORY=0
+qronos --model claude-haiku-5.5
+```
+
+Do not put keys in a file inside the repository. Environment variables, a secrets
+manager, or the connection file under `~/.qronos` (mode `0600`) are the three safe
+places.

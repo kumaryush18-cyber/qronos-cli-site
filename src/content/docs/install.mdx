@@ -1,0 +1,67 @@
+Qronos CLI is one Node package with two binaries. There is no daemon, no build
+step and no global config to set up by hand.
+
+## With npx (nothing installed)
+
+```bash
+npx qronos-cli
+```
+
+`npx` downloads the package once, caches it, and runs it. Good for trying, bad for
+daily use: it checks for a new version every time.
+
+## Globally
+
+```bash
+npm install -g qronos-cli
+```
+
+This gives you two names for the same program:
+
+- `qronos-cli`
+- `qronos`
+
+Both are exact aliases. Nothing else is installed beside them.
+
+## A pinned version
+
+```bash
+npx qronos-cli@1.0.27
+```
+
+Pin when a script or a demo must not change under you. Bump the pin on purpose.
+
+## Requirements
+
+| Item | Value |
+| :--- | :--- |
+| Node | `>= 22.19.0` |
+| Operating systems | Windows, macOS, Linux |
+| Disk | about 40 MB, including the bundled TypeScript server |
+| Licence | MIT |
+
+## Updating
+
+```bash
+npm install -g qronos-cli@latest
+qronos --version
+```
+
+If `--version` prints an older number than you expected, you have two installs on
+`PATH`. Find them:
+
+```bash
+which -a qronos
+```
+
+The first line wins. Remove the old one, or use the full path.
+
+## Uninstalling
+
+```bash
+npm uninstall -g qronos-cli
+rm -rf ~/.qronos      # only if you also want your sessions gone
+```
+
+Sessions are plain JSONL files. Copy the folder before deleting it if you might
+want the history.

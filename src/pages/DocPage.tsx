@@ -1,44 +1,75 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
+import { DocToc } from "@/components/docs/DocToc";
 import { DocsSidebar } from "@/components/docs/DocsSidebar";
+import { mdxComponents } from "@/components/docs/mdx-components";
 import { Shell } from "@/components/layout/Shell";
 import { Callout } from "@/components/ui/Callout";
 import { docNeighbours, findDoc } from "@/content/docs/manifest";
+import { docBody, docHeadings } from "@/content/docs/registry";
+import { useMediaQuery } from "@/lib/use-media-query";
 import { NotFound } from "./NotFound";
 
 /**
- * One documentation page.
- *
- * In P1 the page structure, sidebar, neighbours and metadata are real; the body
- * comes from MDX in P3. The placeholder says so out loud instead of pretending
- * to be documentation.
+ * One documentation page: the MDX body, a table of contents built from the real
+ * heading ids, and links to the neighbours in manifest order.
  */
 export function DocPage({ slug }: { slug: string }) {
   const page = findDoc(slug);
-  if (!page) return <NotFound />;
+  const Body = docBody(slug);
+  if (!page || !Body) return <NotFound />;
 
+  const headings = docHeadings(slug);
   const { prev, next } = docNeighbours(slug);
+  // One table of contents in the DOM, not two: CSS-hidden copies are still read
+  // aloud by a screen reader and still cost work on every render.
+  const wide = useMediaQuery("(min-width: 1280px)");
+  // On a phone the full page list would push the article below twelve links.
+  // A disclosure keeps the article one tap away instead of one thumb-scroll.
+  const large = useMediaQuery("(min-width: 1024px)");
 
   return (
     <Shell>
-      <div className="grid gap-10 py-14 lg:grid-cols-[190px_minmax(0,1fr)_150px] lg:gap-14">
+      <div className="grid gap-10 py-12 lg:grid-cols-[180px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[180px_minmax(0,1fr)_170px]">
         <aside className="lg:sticky lg:top-[102px] lg:self-start">
-          <DocsSidebar />
+          {large ? (
+            <DocsSidebar />
+          ) : (
+            <details className="rounded-card border border-line bg-card p-3">
+              <summary className="flex min-h-11 cursor-pointer items-center font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-muted">
+                Browse all docs
+              </summary>
+              <DocsSidebar className="mt-2" />
+            </details>
+          )}
         </aside>
 
-        <article className="flex min-w-0 max-w-[735px] flex-col gap-6">
+        <article className="flex min-w-0 max-w-[735px] flex-col">
           <header className="flex flex-col gap-3 border-b border-line pb-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">{page.group}</p>
-            <h1 className="text-[clamp(30px,4vw,44px)] leading-[1.06] tracking-[-0.06em]">{page.title}</h1>
+            <h1 className="text-[clamp(30px,4vw,42px)] leading-[1.06] tracking-[-0.06em]">{page.title}</h1>
             <p className="text-[14px] leading-relaxed text-muted">{page.intro}</p>
           </header>
 
-          <Callout tone="note" title="Draft page">
-            The layout, order, metadata and links for this page are finished. Its body is written in phase P3 from
-            the CLI repository, so it cannot drift from what the code actually does.
+          {headings.length > 0 && !wide ? (
+            <details className="my-6 rounded-card border border-line bg-card p-3">
+              <summary className="cursor-pointer font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-muted">
+                On this page
+              </summary>
+              <DocToc headings={headings} className="mt-3" />
+            </details>
+          ) : null}
+
+          <div className="min-w-0 pt-6">
+            <Body components={mdxComponents} />
+          </div>
+
+          <Callout tone="honest" title="Found a mistake?">
+            This page is generated from the CLI repository. If something here does not match what the tool does,
+            open an issue — the wording is checked against the code, not written from memory.
           </Callout>
 
-          <nav aria-label="Pagination" className="mt-4 flex items-stretch justify-between gap-3 border-t border-line pt-6">
+          <nav aria-label="Pagination" className="mt-8 flex items-stretch justify-between gap-3 border-t border-line pt-6">
             {prev ? (
               <Link
                 href={`/docs/${prev.slug}`}
@@ -68,9 +99,8 @@ export function DocPage({ slug }: { slug: string }) {
           </nav>
         </article>
 
-        <aside className="hidden lg:sticky lg:top-[102px] lg:block lg:self-start">
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-muted">On this page</p>
-          <p className="mt-2 text-[12px] leading-relaxed text-muted">Headings appear here in P3.</p>
+        <aside className="hidden xl:sticky xl:top-[102px] xl:block xl:self-start">
+          {wide ? <DocToc headings={headings} /> : null}
         </aside>
       </div>
     </Shell>

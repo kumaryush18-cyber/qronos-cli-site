@@ -6,16 +6,22 @@
   "description": "Marketing site and documentation for Qronos CLI",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run docs:index && tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "npm run docs:index && vitest run",
+    "docs:index": "node scripts/build-doc-sources.mjs",
+    "docs:check": "node scripts/build-doc-sources.mjs --check"
   },
   "dependencies": {
+    "@mdx-js/rollup": "^3.1.1",
     "clsx": "^2.1.1",
+    "github-slugger": "^2.0.0",
     "lucide-react": "^0.453.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.3.1",
     "wouter": "^3.7.1"
   },

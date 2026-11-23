@@ -1,0 +1,78 @@
+These are the errors people actually hit. Each one has a one-line cause and a
+one-line fix.
+
+## `The selected model is temporarily unavailable. Please retry shortly.`
+
+The gateway hides the real upstream status on purpose. Most often it is **429**: the
+provider's rate limit, not a bad configuration.
+
+- Wait a minute and retry.
+- If you run workflows, set `QRONOS_WORKFLOW_CONCURRENCY=2`.
+- The real status is in the provider's own dashboard, not in your terminal.
+
+## `Qronos AI <model> has no API key saved`
+
+Nothing is configured for that model, and the gateway will not send a made-up key.
+Add a credential for the model, or choose another model with `/config`.
+
+## `ads_required` (free tier only)
+
+The free tier needs a real ad impression for the session. A request that never saw an
+ad is paused. The fix is not a proxy: run the CLI normally, or use `/buy-credits`, or
+bring your own provider key.
+
+## A shell call shows `Bash(cmd)` and no sentence
+
+Your install is older than 1.0.27, or the model did not send the optional field.
+
+```bash
+npm install -g qronos-cli@latest
+qronos --version     # expect 1.0.27 or newer
+```
+
+Old transcripts keep the old line. They are not rewritten.
+
+## `ctx.tools is not iterable`
+
+A workflow bug fixed in 1.0.26. Update:
+
+```bash
+npm install -g qronos-cli@latest
+```
+
+## `You are running Node ... but this package requires >= 22.19.0`
+
+Use a newer Node (`nvm install 22`, or your system package manager). There is no
+supported older Node: the terminal code needs the newer stream API.
+
+## The tab title or `/quit` label is wrong
+
+Both were fixed in the same release as the step names. Update the global install and
+restart the terminal, not just Qronos.
+
+## Nothing paints on Windows
+
+Windows PowerShell is supported as a shell tool, but the terminal must be a real
+Windows console (Windows Terminal, PowerShell 7, VS Code terminal). The old
+`conhost` window has no colour support.
+
+## Ctrl+C did nothing
+
+Correct. `ctrl+c` is not bound, because it would kill a stream you already paid for.
+Use **esc** to interrupt, **ctrl+d** to exit.
+
+## A workflow stopped at ten minutes
+
+That is the wall clock cap, and it says so in the result. Raise it up to one hour:
+
+```bash
+QRONOS_WORKFLOW_WALL_CLOCK_MS=1800000 qronos
+```
+
+Or split the job into phases and use `/workflows rerun <id> <phase>`.
+
+## Still stuck
+
+Open an issue with the exact error line, the version from `qronos --version`, and your
+operating system. Do not paste a key or a token: redact anything that looks like a
+secret before you send it.
