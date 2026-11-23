@@ -62,7 +62,25 @@ That prints a JSON blob. It is a credential: put it in a file the agent can read
 never in a chat message. The agent can then create the app, set the domain and
 fetch the deployment token itself.
 
-## The custom domain
+## The custom domain (in progress)
+
+`cli.qronos.me` is registered on the Static Web App and is **waiting for two DNS
+records** at `qronos.me`. These are the real values for this resource:
+
+| Type | Name | Value |
+| :--- | :--- | :--- |
+| `CNAME` | `cli` | `purple-ocean-0d9529800.5.azurestaticapps.net` |
+| `TXT` | `_dnsauth.cli` | `_95mh54g2pbe82dpny2mv97wwtvwydz7` |
+
+Once both resolve, Azure validates the domain and issues a free managed
+certificate. Check it with:
+
+```bash
+az staticwebapp hostname list -n qronos-cli-site -g qronos-site-rg -o table
+dig +short cli.qronos.me
+```
+
+## The custom domain, from scratch
 
 1. In the Static Web App: **Custom domains → Add** → `cli.qronos.me`, hostname type
    **CNAME**. Azure shows a validation value.
