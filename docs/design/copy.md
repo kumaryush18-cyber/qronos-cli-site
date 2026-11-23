@@ -133,14 +133,14 @@ tokens, time; `p pause · x stop · s save · a rerun · f failed · enter view 
 | :--- | :--- | :--- | :--- | :--- |
 | Open source | ✅ MIT | ❌ | ✅ Apache-2.0 | ✅ MIT |
 | Runs in your terminal | ✅ | ✅ | ✅ | ✅ |
-| Workflow script with subagents | ✅ | ⚠️ subagents, no script API | ❌ | ❌ |
+| Workflow script with subagents | ✅ | ⚠️ subagents, no script API | ❌ | ⚠️ subagents, no script API |
 | Step name above each shell call | ✅ | ✅ | ❌ | ❌ |
 | Pause / resume / replay a run | ✅ | ❌ | ❌ | ❌ |
-| Bring your own provider | ✅ | ⚠️ | ✅ | ✅ |
-| Bundled language server | ✅ | ❌ | ❌ | ❌ |
+| Local model through Ollama | ✅ | ❌ | ✅ | ✅ |
+| Any OpenAI- or Anthropic-wire provider | ✅ | ⚠️ first-party, Bedrock, Vertex | ✅ | ✅ |
 
 Footnote, mono 11px `--muted`:
-`Checked 2026-11. If a row is wrong, open an issue and we will fix it the same day.`
+`Checked 2026-11. These are the project's own features, not benchmarks. If a row is wrong, open an issue and we will fix it the same day.`
 
 ---
 
