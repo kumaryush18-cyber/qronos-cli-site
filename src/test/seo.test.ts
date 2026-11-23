@@ -13,15 +13,15 @@ describe("canonicalFor", () => {
     expect(canonicalFor("/docs/workflows/?from=nav#top")).toBe(`${SITE.url}/docs/workflows/`);
   });
 
-  it("keeps one trailing slash on a docs page, because that is the URL that answers 200", () => {
+  it("keeps one trailing slash, because a prerendered page is a directory", () => {
     expect(canonicalFor("/docs/workflows")).toBe(`${SITE.url}/docs/workflows/`);
     expect(canonicalFor("/docs/workflows/")).toBe(`${SITE.url}/docs/workflows/`);
     expect(canonicalFor("/docs")).toBe(`${SITE.url}/docs/`);
+    expect(canonicalFor("/changelog")).toBe(`${SITE.url}/changelog/`);
   });
 
-  it("gives the home page no trailing slash", () => {
+  it("gives the home page no trailing slash, because it is a file", () => {
     expect(canonicalFor("/")).toBe(SITE.url);
-    expect(canonicalFor("/changelog")).toBe(`${SITE.url}/changelog`);
   });
 });
 
@@ -43,7 +43,7 @@ describe("metaFor", () => {
   });
 
   it("treats an unknown docs slug as a 404, not as a page", () => {
-    expect(metaFor("/docs/does-not-exist")).toBe(metaFor("/404"));
+    expect(metaFor("/docs/does-not-exist")).toEqual(metaFor("/404"));
   });
 
   it("ignores a query string when matching", () => {
@@ -51,7 +51,7 @@ describe("metaFor", () => {
   });
 
   it("falls back to the home metadata for an unknown route", () => {
-    expect(metaFor("/nowhere")).toBe(metaFor("/404"));
+    expect(metaFor("/nowhere")).toEqual(metaFor("/404"));
     expect(DEFAULT_META.canonical).toBe(SITE.url);
   });
 });

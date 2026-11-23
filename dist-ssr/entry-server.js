@@ -4453,12 +4453,13 @@ const STATIC = {
   "/docs": {
     title: "Qronos CLI documentation",
     description: "Install, commands, workflows, memory, compaction and every environment variable, in one place.",
-    canonical: `${SITE.url}/docs`
+    // Overwritten by canonicalFor in metaFor; kept so the shape is complete.
+    canonical: `${SITE.url}/docs/`
   },
   "/changelog": {
     title: "Changelog — Qronos CLI",
     description: "Every release, newest first, with what changed and why.",
-    canonical: `${SITE.url}/changelog`
+    canonical: `${SITE.url}/changelog/`
   },
   "/404": {
     title: "Page not found — Qronos CLI",
@@ -4469,14 +4470,12 @@ const STATIC = {
 function canonicalFor(path) {
   const clean = path.split("?")[0]?.split("#")[0] ?? "/";
   if (clean === "/" || clean === "") return SITE.url;
-  const bare = clean.replace(/\/+$/, "");
-  if (bare === "/docs" || bare.startsWith("/docs/")) return `${SITE.url}${bare}/`;
-  return `${SITE.url}${bare}`;
+  return `${SITE.url}${clean.replace(/\/+$/, "")}/`;
 }
 function metaFor(path) {
   const clean = (path.split("?")[0] ?? "/").split("#")[0] ?? "/";
   const fixed = STATIC[clean];
-  if (fixed) return fixed;
+  if (fixed) return { ...fixed, canonical: canonicalFor(clean) };
   const docSlug = /^\/docs\/([^/]+)\/?$/.exec(clean)?.[1];
   if (docSlug) {
     const page = findDoc(docSlug);
@@ -4488,7 +4487,8 @@ function metaFor(path) {
       };
     }
   }
-  return STATIC["/404"] ?? DEFAULT_META;
+  const notFound = STATIC["/404"] ?? DEFAULT_META;
+  return { ...notFound, canonical: canonicalFor("/404") };
 }
 function setMetaTag(doc, key, value, content) {
   let tag = doc.head.querySelector(`meta[${key}="${value}"]`);

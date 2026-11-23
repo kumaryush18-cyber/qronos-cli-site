@@ -85,11 +85,11 @@ count += 1;
 // page cannot be forgotten.
 const today = new Date().toISOString().slice(0, 10);
 // The sitemap must list the URL that answers 200, not the one that redirects:
-// docs pages are directories, so they carry a trailing slash.
+// every prerendered page is a directory, so it carries a trailing slash.
 const urls = ROUTES.map((route) => {
   const bare = route.replace(/\/+$/, "");
   const dir = bare === "/" ? "" : bare;
-  const path = dir === "" ? "/" : dir.startsWith("/docs") ? `${dir}/` : dir;
+  const path = dir === "" ? "/" : `${dir}/`;
   return `  <url><loc>https://cli.qronos.me${path}</loc><lastmod>${today}</lastmod></url>`;
 }).join("\n");
 
