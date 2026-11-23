@@ -2,9 +2,11 @@
 
 Marketing site and documentation for [Qronos CLI](https://github.com/kumaryush18-cyber/qronos-cli).
 
-**Status: phase P1 done.** The shell, tokens, components and all five routes exist
-and render the real copy. The landing page gets its polish in P2 and the docs bodies
-arrive in P3.
+**Status: phase P2 done.** The landing page is finished: typed terminal, live
+workflow panel, quickstart tabs, FAQ, and a quality gate (`scripts/check.mjs`).
+Desktop Lighthouse is 100 across all four categories; mobile accessibility,
+best practices and SEO are 100, performance 86–91 — see `docs/QUALITY.md`.
+Documentation bodies arrive in P3.
 
 - Stack (planned): React 19 · Vite 7 · TypeScript · Tailwind 4 · wouter
 - Target URL: https://cli.qronos.me (docs under `/docs`)
@@ -18,6 +20,7 @@ npm run dev      # http://localhost:5173
 npm test         # 84 tests
 npm run lint     # tsc --noEmit
 npm run build    # dist/ — plain files for Azure
+node scripts/check.mjs   # axe, layout shift, sideways scroll (needs `npm run preview`)
 node scripts/shoot.mjs   # screenshots + overflow check (needs `npm run preview`)
 ```
 

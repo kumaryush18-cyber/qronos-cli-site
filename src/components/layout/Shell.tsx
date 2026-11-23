@@ -22,7 +22,7 @@ export function Section({ children, id, spacing = "normal", className, labelledB
       id={id}
       aria-labelledby={labelledBy}
       className={cn(
-        spacing === "normal" ? "py-[78px] sm:py-[112px]" : "py-12 sm:py-16",
+        spacing === "normal" ? "py-[64px] sm:py-[80px]" : "py-12 sm:py-16",
         "scroll-mt-[96px]",
         className,
       )}

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { App } from "@/App";
 import { DOC_PAGES } from "@/content/docs/manifest";
 
@@ -9,16 +9,18 @@ function renderAt(path: string) {
   return render(<App />);
 }
 
-afterEach(() => {
-  window.history.pushState({}, "", "/");
-});
-
 describe("App routes", () => {
   it("renders the home page with the real headline and install command", () => {
     renderAt("/");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("A terminal that thinks in workflows.");
     expect(screen.getAllByText("npx qronos-cli").length).toBeGreaterThan(0);
     expect(screen.getByRole("navigation", { name: "Main" })).toBeInTheDocument();
+  });
+
+  it("gives the wordmark a name a screen reader can read as two words", () => {
+    renderAt("/");
+    const home = screen.getByRole("link", { name: /Qronos\s*CLI/ });
+    expect(home).toHaveAttribute("href", "/");
   });
 
   it("renders the docs index with every page linked", () => {

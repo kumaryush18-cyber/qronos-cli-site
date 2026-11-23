@@ -38,7 +38,7 @@ layout shift when fonts load.
 Shipped: 11 test files, 84 tests, `tsc` clean, `vite build` clean, screenshots at
 390 / 820 / 1440 with no console error and no sideways scroll.
 
-### P2 — Landing page
+### P2 — Landing page — done
 
 - Hero with the real terminal capture (typing + tool rows + step name + working line).
 - Proof strip, six feature cards, workflows section with the panel mock, comparison
@@ -47,6 +47,10 @@ Shipped: 11 test files, 84 tests, `tsc` clean, `vite build` clean, screenshots a
 
 **Done when** the page scores ≥ 95 Lighthouse performance/accessibility/best-practices/SEO
 locally, and reads cleanly at 320, 768 and 1440.
+
+Measured: desktop **100 / 100 / 100 / 100**, mobile **86–91 performance**, 100 on the
+other three. The gap is React hydration cost, see `docs/QUALITY.md`. Inlined CSS,
+self-hosted fonts, matched fallback metrics (CLS 0) and a typed hero are shipped.
 
 ### P3 — Documentation
 

@@ -19,8 +19,18 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-paper/80 backdrop-blur-xl">
       <nav aria-label="Main" className="mx-auto flex h-[78px] w-full max-w-[1220px] items-center gap-8 px-[22px] sm:px-7">
-        <Link href="/" className="flex items-baseline gap-2" aria-label={`${SITE.name} home`}>
-          <span className="shimmer text-[19px] font-extrabold tracking-[-0.05em]">Qronos</span>
+        <Link href="/" className="flex items-baseline gap-2">
+          {/*
+            The wordmark is two spans with a flex gap, so the DOM text is
+            "QronosCLI". The space inside is for screen readers only: it makes
+            the link name read as two words without changing the layout, and it
+            lets us drop the aria-label, which said something the visible text
+            did not contain.
+          */}
+          <span className="shimmer text-[19px] font-extrabold tracking-[-0.05em]">
+            Qronos
+            <span className="sr-only"> </span>
+          </span>
           <span className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-muted">CLI</span>
         </Link>
 

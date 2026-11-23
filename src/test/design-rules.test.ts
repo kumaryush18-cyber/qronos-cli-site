@@ -55,6 +55,7 @@ describe("design rules", () => {
   it("has exactly one stylesheet entry point and it imports the tokens", () => {
     const entry = readFileSync("src/styles/index.css", "utf8");
     expect(entry).toContain('"tailwindcss"');
+    expect(entry).toContain("./fonts.css");
     expect(entry).toContain("./tokens.css");
     expect(entry).toContain("./base.css");
     expect(STYLE_FILES.filter((file) => file.endsWith("index.css"))).toHaveLength(1);
@@ -65,6 +66,20 @@ describe("design rules", () => {
     // The menu button and the install chip are the two controls a thumb uses.
     expect(nav).toContain("size-11");
     expect(nav).toContain("min-h-11");
+  });
+
+  it("loads no font from a third party", () => {
+    const html = readFileSync("index.html", "utf8");
+    const css = readFileSync("src/styles/index.css", "utf8");
+    expect(html).not.toContain("fonts.googleapis.com");
+    expect(html).not.toContain("fonts.gstatic.com");
+    expect(css).not.toContain("fonts.googleapis.com");
+  });
+
+  it("preloads the two fonts used above the fold", () => {
+    const html = readFileSync("index.html", "utf8");
+    expect(html).toContain("plus-jakarta-sans-normal.woff2");
+    expect(html).toContain("jetbrains-mono-normal.woff2");
   });
 
   it("does not import a component with a relative ../../ path", () => {

@@ -12,7 +12,7 @@
 
   /* Text */
   --ink: #f7f8fc; /* 18.9:1 on paper */
-  --muted: #a8a8b6; /*  8.6:1 on paper */
+  --muted: #b4b4c2; /*  9.6:1 on paper */
 
   /* Brand */
   --orange: #ff6b00; /*  7.1:1 on paper */
@@ -22,9 +22,10 @@
   --orange-glow: rgba(255, 107, 0, 0.22); /* the only glow: primary button hover */
 
   /* State. A stopped agent is amber, never red. */
-  --ok: #2ee676;
-  --fail: #ff5f6d;
-  --stop: #ffcd82;
+  --ok: #2ee676;    /* 12.2:1 on paper */
+  --fail: #ff5f6d;  /*  6.8:1 on paper */
+  --stop: #ffcd82;  /* 13.7:1 on paper */
+  --info: #78b4ff;  /* 10.4:1 on paper — a replay is blue, not green */
 
   /* Motion — two animations, see brand.md §5 */
   --shimmer-period: 3000ms;
@@ -57,9 +58,10 @@
   --color-ok: var(--ok);
   --color-fail: var(--fail);
   --color-stop: var(--stop);
+  --color-info: var(--info);
 
-  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Plus Jakarta Sans", "Jakarta Fallback", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Mono Fallback", ui-monospace, SFMono-Regular, monospace;
   --font-serif: "Playfair Display", Georgia, serif;
 
   --radius-card: 14px;

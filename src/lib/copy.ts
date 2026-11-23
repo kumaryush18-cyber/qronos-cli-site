@@ -112,10 +112,66 @@ export const WORKFLOWS = {
     },
   ],
   panelHint: "p pause · x stop · s save · a rerun · f failed · enter view · esc close",
-  panel: [
-    { phase: "Scout", agents: "3/3", tokens: "6.1k", note: "done" },
-    { phase: "Read", agents: "4/4", tokens: "11.8k", note: "done" },
-    { phase: "Report", agents: "1/1", tokens: "3.2k", note: "writing" },
+  panelHintShort: "p pause · x stop · esc close",
+} as const;
+
+/**
+ * The panel demo. It is drawn from data so a row can be added without touching
+ * a component, and so tests can prove the states stay honest: a stopped agent
+ * is amber, never red; a replayed agent is blue and costs nothing.
+ */
+export type PanelAgentState = "done" | "failed" | "stopped" | "replayed" | "running";
+
+export interface PanelAgent {
+  readonly name: string;
+  readonly model: string;
+  readonly tokens: string;
+  readonly seconds: string;
+  readonly state: PanelAgentState;
+}
+
+export interface PanelPhase {
+  readonly id: string;
+  readonly name: string;
+  readonly agents: readonly PanelAgent[];
+  readonly tokens: string;
+}
+
+export const WORKFLOW_DEMO: {
+  readonly id: string;
+  readonly elapsed: string;
+  readonly phases: readonly PanelPhase[];
+} = {
+  id: "wf_9k2",
+  elapsed: "2m 41s",
+  phases: [
+    {
+      id: "scout",
+      name: "Scout",
+      tokens: "6.1k",
+      agents: [
+        { name: "trace-imports", model: "haiku-5.5", tokens: "2.4k", seconds: "0m 21s", state: "done" },
+        { name: "find-tests", model: "haiku-5.5", tokens: "1.9k", seconds: "0m 18s", state: "done" },
+        { name: "read-config", model: "haiku-5.5", tokens: "1.8k", seconds: "0m 14s", state: "done" },
+      ],
+    },
+    {
+      id: "audit",
+      name: "Audit",
+      tokens: "11.8k",
+      agents: [
+        { name: "check-auth", model: "sonnet-5.5", tokens: "4.2k", seconds: "1m 02s", state: "done" },
+        { name: "check-uploads", model: "sonnet-5.5", tokens: "3.1k", seconds: "0m 48s", state: "failed" },
+        { name: "check-logging", model: "sonnet-5.5", tokens: "2.6k", seconds: "0m 39s", state: "stopped" },
+        { name: "check-secrets", model: "sonnet-5.5", tokens: "0", seconds: "0m 00s", state: "replayed" },
+      ],
+    },
+    {
+      id: "report",
+      name: "Report",
+      tokens: "3.2k",
+      agents: [{ name: "write-report", model: "opus-5.5", tokens: "3.2k", seconds: "0m 51s", state: "running" }],
+    },
   ],
 } as const;
 
@@ -186,6 +242,10 @@ export const QUICKSTART = {
     { title: "Choose", detail: "Sign in, or use my own API key" },
     { title: "Ask", detail: "explain this repo, then fix the failing test" },
   ] satisfies readonly QuickStep[],
+  tabs: [
+    { id: "first-run", label: "First run" },
+    { id: "byok", label: "Bring your own key" },
+  ],
   byok: [
     'qronos --provider openai --api-key "$OPENAI_API_KEY"',
     "qronos --base-url http://localhost:11434/v1 --model llama3",

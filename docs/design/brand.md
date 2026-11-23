@@ -36,7 +36,7 @@ Dark only. There is no light theme — orange on white fails both mood and contr
 | `--card` | `#0e0e12` | cards, code panels, nav (with blur) | — |
 | `--line` | `rgba(255,255,255,0.09)` | every border, 1px | — |
 | `--ink` | `#f7f8fc` | headings and body | 18.9 : 1 on paper |
-| `--muted` | `#a8a8b6` | secondary text, captions | 8.6 : 1 |
+| `--muted` | `#b4b4c2` | secondary text, captions | 9.6 : 1 |
 | `--orange` | `#ff6b00` | accent, links, primary button, tick | 7.1 : 1 |
 | `--orange-pale` | `#ffcd82` | **only** the wordmark and the shimmer band | 13.7 : 1 |
 | `--orange-soft` | `rgba(255,107,0,0.12)` | icon tiles, chip backgrounds | — |
@@ -48,7 +48,7 @@ Rules:
 
 - Orange is an **accent**, never a background fill for large areas. The one exception is
   the primary button, which is orange text on a soft orange tint, not a solid block.
-- Text on `--paper` never goes below `--muted` (8.6:1). No grey-on-grey.
+- Text on `--paper` never goes below `--muted` (9.6:1). No grey-on-grey.
 - Colour never carries meaning alone: a tick and a cross also have a glyph and a word.
 
 ---
@@ -79,12 +79,12 @@ Rules:
 shell      1220px, padding 28px (22px under 820px)
 nav        78px tall, blurred, 1px bottom border
 hero       grid 1.03fr / 0.97fr, gap 66px
-sections   padding 112px 28px (78px 22px on mobile)
+sections   padding 80px 28px (64px 22px on mobile)
 grid gaps  14px between cards
 radius     14px cards · 18px panels · 999px chips · 9px buttons
 ```
 
-Spacing scale — only these numbers: `4 8 12 16 24 32 48 72 96 112`.
+Spacing scale — only these numbers: `4 8 12 16 24 32 48 64 80`.
 
 Breakpoints: `480`, `820`, `1100`. Every page must read at **320px** without horizontal
 scroll. Cards in a grid always have equal heights.

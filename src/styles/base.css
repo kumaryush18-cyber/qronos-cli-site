@@ -1,5 +1,32 @@
 /* Base element styles and the handful of utilities that are not utilities. */
 
+/*
+ * Font fallbacks with matched metrics.
+ *
+ * Google Fonts arrive a moment after the first paint. Without these overrides
+ * the fallback text is a different width, so every line re-wraps when the real
+ * font lands and the page jumps (a bad CLS score). `size-adjust` and the
+ * ascent/descent overrides make the fallback occupy the same box, so the swap
+ * moves nothing.
+ */
+@font-face {
+  font-family: "Jakarta Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Liberation Sans");
+  size-adjust: 104.5%;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Mono Fallback";
+  src: local("Courier New"), local("Liberation Mono");
+  size-adjust: 97%;
+  ascent-override: 88%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
 @layer base {
   *,
   *::before,

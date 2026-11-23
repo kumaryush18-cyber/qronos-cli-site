@@ -13,13 +13,14 @@ import {
 import { Eyebrow } from "@/components/layout/Eyebrow";
 import { Section, Shell } from "@/components/layout/Shell";
 import { TerminalMock } from "@/components/terminal/TerminalMock";
-import { Badge } from "@/components/ui/Badge";
+import { WorkflowPanelMock } from "@/components/workflow/WorkflowPanelMock";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { CodePanel } from "@/components/ui/CodePanel";
 import { CompareTable } from "@/components/ui/CompareTable";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { FeatureCard } from "@/components/ui/FeatureCard";
+import { Tabs } from "@/components/ui/Tabs";
 import {
   CLOSING,
   COMPARISON,
@@ -87,7 +88,7 @@ export function Home() {
             </div>
           </div>
 
-          <TerminalMock lines={HERO_TERMINAL} className="w-full" />
+          <TerminalMock lines={HERO_TERMINAL} className="w-full" animate />
         </div>
       </Shell>
 
@@ -146,26 +147,7 @@ export function Home() {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-3 self-start rounded-panel border border-line bg-card p-5">
-            <div className="flex items-center justify-between">
-              <Badge tone="orange">run wf_9k2 · live</Badge>
-              <span className="font-mono text-[11px] text-muted">09:41</span>
-            </div>
-
-            <ul className="mt-2 flex flex-col divide-y divide-line">
-              {WORKFLOWS.panel.map((row) => (
-                <li key={row.phase} className="flex items-center gap-3 py-3">
-                  <span aria-hidden className="size-1.5 rounded-full bg-ok" />
-                  <span className="text-[13px] text-ink">{row.phase}</span>
-                  <span className="font-mono text-[11px] text-muted">{row.agents}</span>
-                  <span className="ml-auto font-mono text-[11px] text-muted">{row.tokens}</span>
-                  <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-orange">{row.note}</span>
-                </li>
-              ))}
-            </ul>
-
-            <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">{WORKFLOWS.panelHint}</p>
-          </div>
+          <WorkflowPanelMock className="self-start" />
         </div>
       </Section>
 
@@ -204,8 +186,21 @@ export function Home() {
           </div>
 
           <div className="flex min-w-0 flex-col gap-4">
-            <CodePanel code={SITE.install} label="first run" />
-            <CodePanel code={QUICKSTART.byok.join("\n")} label="bring your own key" />
+            <Tabs
+              label="How to start"
+              tabs={[
+                {
+                  id: "first-run",
+                  label: "First run",
+                  panel: <CodePanel code={SITE.install} label="shell" />,
+                },
+                {
+                  id: "byok",
+                  label: "Bring your own key",
+                  panel: <CodePanel code={QUICKSTART.byok.join("\n")} label="providers" />,
+                },
+              ]}
+            />
             <Callout tone="honest">{QUICKSTART.keyNote}</Callout>
           </div>
         </div>
@@ -223,9 +218,12 @@ export function Home() {
         <div className="mt-10 flex flex-col divide-y divide-line border-y border-line">
           {FAQ.map((item) => (
             <details key={item.question} className="group py-4">
-              <summary className="flex cursor-pointer items-center gap-3 text-[14.5px] font-bold text-ink marker:content-none">
-                <span className="font-mono text-[11px] text-orange transition-transform duration-[160ms] group-open:rotate-90">
-                  ▸
+              <summary className="flex min-h-11 cursor-pointer items-center gap-3 py-1 text-[14.5px] font-bold text-ink marker:content-none">
+                <span
+                  aria-hidden
+                  className="font-mono text-[13px] leading-none text-orange transition-transform duration-[160ms] group-open:rotate-45"
+                >
+                  +
                 </span>
                 {item.question}
               </summary>
